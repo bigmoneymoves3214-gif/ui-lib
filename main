@@ -10,6 +10,7 @@ local Players = game:GetService("Players")
 
 local Library = {
     Open = true,
+    ToggleKey = Enum.KeyCode.RightControl,
     AccentColor = Color3.fromRGB(96, 76, 255),
     Font = Enum.Font.GothamMedium,
     FontBold = Enum.Font.GothamBold,
@@ -634,7 +635,7 @@ function Library:CreateWindow(Settings)
     })
 
     InputService.InputBegan:Connect(function(input)
-        if input.KeyCode == Enum.KeyCode.RightControl then 
+        if input.KeyCode == Library.ToggleKey then 
             Library.Open = not Library.Open 
             Main.Visible = Library.Open 
             CustomCursor.Visible = Library.Open
@@ -955,8 +956,8 @@ function Library:CreateWindow(Settings)
                 Create("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0,6)})
                 Create("UIStroke", {Parent = ListFrame, Color = Library.Theme.Outline, Thickness = 1})
                 
-                local List = Create("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,-6,1,-6), Position = UDim2.new(0,3,0,3), BorderSizePixel = 0, ScrollBarThickness = 3, ScrollBarImageColor3 = Library.AccentColor, ZIndex = 51, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = Enum.AutomaticSize.Y})
-                Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,2)})
+                local List = Create("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0), Position = UDim2.new(0,0,0,0), BorderSizePixel = 0, ScrollBarThickness = 0, ScrollBarImageColor3 = Library.AccentColor, ZIndex = 51, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = Enum.AutomaticSize.Y})
+                Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,0)})
                 
                 local Open = false
                 
@@ -966,8 +967,7 @@ function Library:CreateWindow(Settings)
                 }
                 
                 local function CreateOption(opt)
-                    local OptBtn = Create("TextButton", {Parent = List, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,26), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
-                    Create("UICorner", {Parent = OptBtn, CornerRadius = UDim.new(0, 4)})
+                    local OptBtn = Create("TextButton", {Parent = List, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,28), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
                     local OptText = Create("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-20,1,0), Font = Library.Font, TextColor3 = Library.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
                     
                     OptBtn.MouseEnter:Connect(function() 
@@ -1342,11 +1342,20 @@ function Library:CreateWindow(Settings)
                             KeybindObj.Value = key
                             Btn.Text = key.Name
                             TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = Library.Theme.Element}):Play()
+                            -- Update Library.ToggleKey if this is the menu toggle keybind
+                            if Text:lower():find("toggle") or Text:lower():find("menu") then
+                                Library.ToggleKey = key
+                            end
                             pcall(Callback, key)
                             con:Disconnect()
                         end
                     end)
                 end)
+                
+                -- Set initial toggle key if this is the menu toggle keybind
+                if (Text:lower():find("toggle") or Text:lower():find("menu")) and Default then
+                    Library.ToggleKey = Default
+                end
                 
                 Library.Options[Text] = KeybindObj
                 return KeybindObj
@@ -1688,5 +1697,10 @@ function Library.SaveManager:BuildConfigSection(tab)
 end
 
 Library.SaveManager:BuildFolderTree()
+
+-- Auto-load config on startup (delayed to ensure UI is ready)
+task.delay(1, function()
+    Library.SaveManager:LoadAutoloadConfig()
+end)
 
 return Library
