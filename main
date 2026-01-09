@@ -955,8 +955,8 @@ function Library:CreateWindow(Settings)
                 Create("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0,6)})
                 Create("UIStroke", {Parent = ListFrame, Color = Library.Theme.Outline, Thickness = 1})
                 
-                local List = Create("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,-4,1,-4), Position = UDim2.new(0,2,0,2), BorderSizePixel = 0, ScrollBarThickness = 3, ScrollBarImageColor3 = Library.AccentColor, ZIndex = 51, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = Enum.AutomaticSize.Y})
-                Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,0)})
+                local List = Create("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,-6,1,-6), Position = UDim2.new(0,3,0,3), BorderSizePixel = 0, ScrollBarThickness = 3, ScrollBarImageColor3 = Library.AccentColor, ZIndex = 51, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = Enum.AutomaticSize.Y})
+                Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,2)})
                 
                 local Open = false
                 
@@ -966,9 +966,9 @@ function Library:CreateWindow(Settings)
                 }
                 
                 local function CreateOption(opt)
-                    local OptBtn = Create("TextButton", {Parent = List, BackgroundTransparency = 1, Size = UDim2.new(1,-4,0,26), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
+                    local OptBtn = Create("TextButton", {Parent = List, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,26), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
                     Create("UICorner", {Parent = OptBtn, CornerRadius = UDim.new(0, 4)})
-                    local OptText = Create("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,8,0,0), Size = UDim2.new(1,-16,1,0), Font = Library.Font, TextColor3 = Library.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
+                    local OptText = Create("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-20,1,0), Font = Library.Font, TextColor3 = Library.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
                     
                     OptBtn.MouseEnter:Connect(function() 
                         TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = Library.AccentColor}):Play() 
