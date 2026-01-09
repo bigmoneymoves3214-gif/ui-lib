@@ -1562,15 +1562,20 @@ function Library.SaveManager:Load(name)
     local success, decoded = pcall(HttpService.JSONDecode, HttpService, readfile(file))
     if not success then return false, "decode error" end
     
+    local loadedCount = 0
     for _, option in next, decoded.objects do
         if self.Parser[option.type] then
-            task.spawn(function()
-                self.Parser[option.type].Load(option.idx, option)
-            end)
+            local idx = option.idx
+            if Library.Options[idx] and Library.Options[idx].Set then
+                local ok = pcall(function()
+                    self.Parser[option.type].Load(idx, option)
+                end)
+                if ok then loadedCount = loadedCount + 1 end
+            end
         end
     end
     
-    return true
+    return true, loadedCount
 end
 
 function Library.SaveManager:Delete(name)
@@ -1587,12 +1592,12 @@ function Library.SaveManager:LoadAutoloadConfig()
     if isfile(autoloadPath) then
         local name = readfile(autoloadPath)
         if name and name ~= "" then
-            task.delay(0.5, function()
-                local success, err = self:Load(name)
-                if success then
-                    Library:Notify("Config", "Auto-loaded: " .. name, 3, "check")
-                end
-            end)
+            local success, count = self:Load(name)
+            if success then
+                Library:Notify("Config", "Auto-loaded: " .. name .. " (" .. tostring(count or 0) .. " settings)", 3, "check")
+            else
+                Library:Notify("Config", "Failed to auto-load: " .. name, 3, "error")
+            end
             return true
         end
     end
@@ -1697,10 +1702,5 @@ function Library.SaveManager:BuildConfigSection(tab)
 end
 
 Library.SaveManager:BuildFolderTree()
-
--- Auto-load config on startup (delayed to ensure UI is ready)
-task.delay(1, function()
-    Library.SaveManager:LoadAutoloadConfig()
-end)
 
 return Library
