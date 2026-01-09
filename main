@@ -162,19 +162,24 @@ function Library:CreateWindow(Settings)
     local ScreenGui = Create("ScreenGui", { Name = "EvictedUI", IgnoreGuiInset = true, ResetOnSpawn = false })
     ProtectGui(ScreenGui)
     
-    -- Loading Screen
+    -- Loading Screen (same size as menu)
     local LoadingScreen = Create("Frame", {
         Parent = ScreenGui,
         BackgroundColor3 = Library.Theme.Background,
-        Size = UDim2.new(1, 0, 1, 0),
-        ZIndex = 1000
+        Position = UDim2.new(0.5, -375, 0.5, -275),
+        Size = UDim2.new(0, 750, 0, 550),
+        ZIndex = 1000,
+        BorderSizePixel = 0
     })
+    Create("UICorner", {Parent = LoadingScreen, CornerRadius = UDim.new(0, 8)})
+    Create("UIStroke", {Parent = LoadingScreen, Color = Library.Theme.Outline, Thickness = 1})
+    AddShadow(LoadingScreen, 0.2)
     
     local LoadingLogo = Create("ImageLabel", {
         Parent = LoadingScreen,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0.5, -40, 0.4, -40),
-        Size = UDim2.new(0, 80, 0, 80),
+        Position = UDim2.new(0.5, -50, 0.35, -50),
+        Size = UDim2.new(0, 100, 0, 100),
         Image = Logo or "rbxassetid://7733960981",
         ZIndex = 1001
     })
@@ -182,8 +187,8 @@ function Library:CreateWindow(Settings)
     local LoadingBarBg = Create("Frame", {
         Parent = LoadingScreen,
         BackgroundColor3 = Library.Theme.Element,
-        Position = UDim2.new(0.5, -100, 0.55, 0),
-        Size = UDim2.new(0, 200, 0, 6),
+        Position = UDim2.new(0.5, -150, 0.6, 0),
+        Size = UDim2.new(0, 300, 0, 8),
         ZIndex = 1001,
         BorderSizePixel = 0
     })
@@ -201,12 +206,12 @@ function Library:CreateWindow(Settings)
     local LoadingText = Create("TextLabel", {
         Parent = LoadingScreen,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0.5, -100, 0.55, 15),
-        Size = UDim2.new(0, 200, 0, 20),
+        Position = UDim2.new(0.5, -150, 0.6, 20),
+        Size = UDim2.new(0, 300, 0, 20),
         Text = "Loading...",
         Font = Library.Font,
         TextColor3 = Library.Theme.TextDim,
-        TextSize = 13,
+        TextSize = 14,
         ZIndex = 1001
     })
     
