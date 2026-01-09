@@ -882,21 +882,33 @@ function Library:CreateWindow(Settings)
                     Value = State
                 }
                 
-                local function Update()
+                local function Update(instant)
                     ToggleObj.Value = State
-                    if State then 
-                        TweenService:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = Library.AccentColor}):Play() 
-                        TweenService:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
-                        TweenService:Create(Label, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text}):Play()
-                    else 
-                        TweenService:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = Library.Theme.Element}):Play()
-                        TweenService:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
-                        TweenService:Create(Label, TweenInfo.new(0.2), {TextColor3 = Library.Theme.TextDim}):Play()
+                    if instant then
+                        if State then
+                            Check.BackgroundColor3 = Library.AccentColor
+                            Checkmark.TextTransparency = 0
+                            Label.TextColor3 = Library.Theme.Text
+                        else
+                            Check.BackgroundColor3 = Library.Theme.Element
+                            Checkmark.TextTransparency = 1
+                            Label.TextColor3 = Library.Theme.TextDim
+                        end
+                    else
+                        if State then 
+                            TweenService:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = Library.AccentColor}):Play() 
+                            TweenService:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
+                            TweenService:Create(Label, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text}):Play()
+                        else 
+                            TweenService:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = Library.Theme.Element}):Play()
+                            TweenService:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+                            TweenService:Create(Label, TweenInfo.new(0.2), {TextColor3 = Library.Theme.TextDim}):Play()
+                        end
                     end
                     pcall(Callback, State)
                 end
                 
-                ToggleObj.Set = function(self, v) State = v self.Value = v Update() end
+                ToggleObj.Set = function(self, v) State = v self.Value = v Update(true) end
                 
                 Frame.MouseButton1Click:Connect(function() State = not State Update() end)
                 Update()
@@ -927,16 +939,20 @@ function Library:CreateWindow(Settings)
                      Value = CurrentValue
                  }
                  
-                 local function Set(v)
+                 local function Set(v, instant)
                      v = math.clamp(v, Min, Max)
                      CurrentValue = v
                      SliderObj.Value = v
-                     TweenService:Create(Fill, TweenInfo.new(0.1), {Size = UDim2.new((v-Min)/(Max-Min), 0, 1, 0)}):Play()
+                     if instant then
+                         Fill.Size = UDim2.new((v-Min)/(Max-Min), 0, 1, 0)
+                     else
+                         TweenService:Create(Fill, TweenInfo.new(0.1), {Size = UDim2.new((v-Min)/(Max-Min), 0, 1, 0)}):Play()
+                     end
                      Value.Text = math.floor(v*100)/100
                      pcall(Callback, v)
                  end
                  
-                 SliderObj.Set = function(self, v) Set(v) end
+                 SliderObj.Set = function(self, v) Set(v, true) end
                  
                  local Dragging = false
                  Bg.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then Dragging = true Set(Min + ((Max-Min) * math.clamp((i.Position.X - Bg.AbsolutePosition.X)/Bg.AbsoluteSize.X, 0, 1))) end end)
@@ -1577,7 +1593,7 @@ function Library.SaveManager:Load(name)
         local optionObj = Library.Options[idx]
         
         if optionObj and optionObj.Set then
-            local ok = pcall(function()
+            local ok, err = pcall(function()
                 if optType == "Toggle" then
                     optionObj:Set(option.value)
                 elseif optType == "Slider" then
@@ -1594,7 +1610,11 @@ function Library.SaveManager:Load(name)
                     optionObj:Set(option.value)
                 end
             end)
-            if ok then loadedCount = loadedCount + 1 end
+            if ok then 
+                loadedCount = loadedCount + 1 
+            else
+                warn("Failed to load " .. idx .. ": " .. tostring(err))
+            end
         end
     end
     
