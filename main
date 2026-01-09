@@ -547,45 +547,62 @@ function Library:CreateWindow(Settings)
                 local DropFrame = Create("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,50), ClipsDescendants = false})
                 local Label = Create("TextLabel", {Parent = DropFrame, Text = Text, Font = Library.Font, TextColor3 = Library.Theme.TextDim, Size = UDim2.new(1,0,0,18), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
                 
-                local Btn = Create("TextButton", {Parent = DropFrame, BackgroundColor3 = Library.Theme.Element, Size = UDim2.new(1,0,0,26), Position = UDim2.new(0,0,0,22), Text = "", Font = Library.Font, TextColor3 = Library.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false, TextSize = 13, BorderSizePixel = 0})
+                local Btn = Create("TextButton", {Parent = DropFrame, BackgroundColor3 = Library.Theme.Element, Size = UDim2.new(1,0,0,28), Position = UDim2.new(0,0,0,20), Text = "", Font = Library.Font, TextColor3 = Library.Theme.Text, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false, TextSize = 13, BorderSizePixel = 0})
                 Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0,6)})
                 local DropStroke = Create("UIStroke", {Parent = Btn, Color = Library.Theme.Outline, Thickness = 1})
                 
-                Btn.MouseEnter:Connect(function() TweenService:Create(DropStroke, TweenInfo.new(0.15), {Color = Library.AccentColor}):Play() TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = Library.Theme.Text}):Play() end)
-                Btn.MouseLeave:Connect(function() TweenService:Create(DropStroke, TweenInfo.new(0.15), {Color = Library.Theme.Outline}):Play() TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = Library.Theme.TextDim}):Play() end)
+                Btn.MouseEnter:Connect(function() 
+                    TweenService:Create(DropStroke, TweenInfo.new(0.15), {Color = Library.AccentColor}):Play() 
+                    TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = Library.Theme.Text}):Play() 
+                    TweenService:Create(Arrow, TweenInfo.new(0.15), {TextColor3 = Library.AccentColor}):Play()
+                end)
+                Btn.MouseLeave:Connect(function() 
+                    TweenService:Create(DropStroke, TweenInfo.new(0.15), {Color = Library.Theme.Outline}):Play() 
+                    TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = Library.Theme.TextDim}):Play() 
+                    TweenService:Create(Arrow, TweenInfo.new(0.15), {TextColor3 = Library.Theme.TextDim}):Play()
+                end)
                 
-                local BtnText = Create("TextLabel", {Parent = Btn, Text = "  " .. tostring(Default), BackgroundTransparency = 1, Size = UDim2.new(1,-30,1,0), Font = Library.Font, TextColor3 = Library.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left})
+                local BtnText = Create("TextLabel", {Parent = Btn, Text = tostring(Default), BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-40,1,0), Font = Library.Font, TextColor3 = Library.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left})
                 
-                local Arrow = Create("TextLabel", {Parent = Btn, Text = "▼", Font = Library.Font, TextColor3 = Library.Theme.TextDim, Size = UDim2.new(0,20,1,0), Position = UDim2.new(1,-24,0,0), BackgroundTransparency = 1, TextSize = 11})
+                local Arrow = Create("TextLabel", {Parent = Btn, Text = "▾", Font = Library.FontBold, TextColor3 = Library.Theme.TextDim, Size = UDim2.new(0,24,1,0), Position = UDim2.new(1,-28,0,0), BackgroundTransparency = 1, TextSize = 14})
                 
-                local ListFrame = Create("Frame", {Parent = DropFrame, BackgroundColor3 = Library.Theme.Element, Position = UDim2.new(0,0,0,50), Size = UDim2.new(1,0,0,0), BorderSizePixel = 0, ZIndex = 10, ClipsDescendants = true})
+                local ListFrame = Create("Frame", {Parent = DropFrame, BackgroundColor3 = Library.Theme.Section, Position = UDim2.new(0,0,0,50), Size = UDim2.new(1,0,0,0), BorderSizePixel = 0, ZIndex = 50, ClipsDescendants = true})
                 Create("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0,6)})
                 Create("UIStroke", {Parent = ListFrame, Color = Library.Theme.Outline, Thickness = 1})
                 
-                local List = Create("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0), BorderSizePixel = 0, ScrollBarThickness = 2, ZIndex = 11})
-                Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder})
+                local List = Create("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,-4,1,-4), Position = UDim2.new(0,2,0,2), BorderSizePixel = 0, ScrollBarThickness = 3, ScrollBarImageColor3 = Library.AccentColor, ZIndex = 51, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = Enum.AutomaticSize.Y})
+                Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,2)})
                 
                 local Open = false
                 Btn.MouseButton1Click:Connect(function()
                     Open = not Open
                     if Open then
-                        local height = math.min(#Options * 26, 130)
-                        TweenService:Create(ListFrame, TweenInfo.new(0.2), {Size = UDim2.new(1,0,0,height)}):Play()
+                        local height = math.min(#Options * 28 + 6, 150)
+                        TweenService:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,height)}):Play()
                         TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = 180}):Play()
                     else
-                        TweenService:Create(ListFrame, TweenInfo.new(0.2), {Size = UDim2.new(1,0,0,0)}):Play()
+                        TweenService:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,0)}):Play()
                         TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = 0}):Play()
                     end
                 end)
                 
                 for _, opt in pairs(Options) do
-                    local OptBtn = Create("TextButton", {Parent = List, BackgroundColor3 = Library.Theme.Element, Size = UDim2.new(1,0,0,26), Text = "  " .. opt, Font = Library.Font, TextColor3 = Library.Theme.TextDim, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 12})
-                    OptBtn.MouseEnter:Connect(function() TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundColor3 = Library.Theme.Outline}):Play() end)
-                    OptBtn.MouseLeave:Connect(function() TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundColor3 = Library.Theme.Element}):Play() end)
+                    local OptBtn = Create("TextButton", {Parent = List, BackgroundColor3 = Library.Theme.Element, Size = UDim2.new(1,-4,0,26), Text = "", Font = Library.Font, TextColor3 = Library.Theme.TextDim, TextXAlignment = Enum.TextXAlignment.Left, AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
+                    Create("UICorner", {Parent = OptBtn, CornerRadius = UDim.new(0,4)})
+                    local OptText = Create("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-20,1,0), Font = Library.Font, TextColor3 = Library.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
+                    
+                    OptBtn.MouseEnter:Connect(function() 
+                        TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundColor3 = Library.AccentColor}):Play() 
+                        TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = Library.Theme.Text}):Play()
+                    end)
+                    OptBtn.MouseLeave:Connect(function() 
+                        TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundColor3 = Library.Theme.Element}):Play() 
+                        TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = Library.Theme.TextDim}):Play()
+                    end)
                     OptBtn.MouseButton1Click:Connect(function()
-                        BtnText.Text = "  " .. opt
+                        BtnText.Text = opt
                         Open = false
-                        TweenService:Create(ListFrame, TweenInfo.new(0.2), {Size = UDim2.new(1,0,0,0)}):Play()
+                        TweenService:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,0)}):Play()
                         TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = 0}):Play()
                         pcall(Callback, opt)
                     end)
@@ -778,7 +795,8 @@ function Library:CreateWindow(Settings)
                     SVPicker.InputBegan:Connect(function(input)
                         if input.UserInputType == Enum.UserInputType.MouseButton1 then
                             SVDragging = true
-                            local pos = (input.Position - SVPicker.AbsolutePosition) / SVPicker.AbsoluteSize
+                            local inputPos = Vector2.new(input.Position.X, input.Position.Y)
+                            local pos = (inputPos - SVPicker.AbsolutePosition) / SVPicker.AbsoluteSize
                             CurrentColor.S = math.clamp(pos.X, 0, 1)
                             CurrentColor.V = math.clamp(1 - pos.Y, 0, 1)
                             UpdateColor()
@@ -786,7 +804,8 @@ function Library:CreateWindow(Settings)
                     end)
                     local svConn = InputService.InputChanged:Connect(function(input)
                         if SVDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-                            local pos = (input.Position - SVPicker.AbsolutePosition) / SVPicker.AbsoluteSize
+                            local inputPos = Vector2.new(input.Position.X, input.Position.Y)
+                            local pos = (inputPos - SVPicker.AbsolutePosition) / SVPicker.AbsoluteSize
                             CurrentColor.S = math.clamp(pos.X, 0, 1)
                             CurrentColor.V = math.clamp(1 - pos.Y, 0, 1)
                             UpdateColor()
