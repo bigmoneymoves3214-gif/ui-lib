@@ -413,7 +413,7 @@ function Library:CreateWindow(Settings)
         BackgroundTransparency = 1,
         Position = UDim2.new(0.5, -50, 0.35, -50),
         Size = UDim2.new(0, 100, 0, 100),
-        Image = Logo or "rbxassetid://7733960981",
+        Image = Logo or "rbxassetid://136163314754809",
         ZIndex = 1001
     })
     
@@ -877,7 +877,13 @@ function Library:CreateWindow(Settings)
                 Frame.MouseLeave:Connect(function() TweenService:Create(CheckStroke, TweenInfo.new(0.15), {Color = Library.Theme.Outline}):Play() end)
                 
                 local State = Default or false
+                local ToggleObj = {
+                    Type = "Toggle",
+                    Value = State
+                }
+                
                 local function Update()
+                    ToggleObj.Value = State
                     if State then 
                         TweenService:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = Library.AccentColor}):Play() 
                         TweenService:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
@@ -889,14 +895,12 @@ function Library:CreateWindow(Settings)
                     end
                     pcall(Callback, State)
                 end
+                
+                ToggleObj.Set = function(self, v) State = v self.Value = v Update() end
+                
                 Frame.MouseButton1Click:Connect(function() State = not State Update() end)
                 Update()
                 
-                local ToggleObj = {
-                    Type = "Toggle",
-                    Value = State,
-                    Set = function(self, v) State = v self.Value = v Update() end
-                }
                 Library.Options[Text] = ToggleObj
                 return ToggleObj
             end
@@ -912,30 +916,34 @@ function Library:CreateWindow(Settings)
                  local Fill = Create("Frame", {Parent = Bg, BackgroundColor3 = Library.AccentColor, Size = UDim2.new(0,0,1,0), BorderSizePixel = 0})
                  Create("UICorner", {Parent = Fill, CornerRadius = UDim.new(1,0)})
                  
-                 local Value = Create("TextLabel", {Parent = Frame, BackgroundTransparency = 1, Text = tostring(Default), TextColor3 = Library.Theme.Text, Font=Library.Font, TextSize=13, Size = UDim2.new(1,0,0,16), TextXAlignment=Enum.TextXAlignment.Right})
+                local Value = Create("TextLabel", {Parent = Frame, BackgroundTransparency = 1, Text = tostring(Default), TextColor3 = Library.Theme.Text, Font=Library.Font, TextSize=13, Size = UDim2.new(1,0,0,16), TextXAlignment=Enum.TextXAlignment.Right})
                  
                  Bg.MouseEnter:Connect(function() TweenService:Create(BgStroke, TweenInfo.new(0.15), {Color = Library.AccentColor}):Play() TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = Library.Theme.Text}):Play() end)
                  Bg.MouseLeave:Connect(function() TweenService:Create(BgStroke, TweenInfo.new(0.15), {Color = Library.Theme.Outline}):Play() TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = Library.Theme.TextDim}):Play() end)
                  
                  local CurrentValue = Default or Min
+                 local SliderObj = {
+                     Type = "Slider",
+                     Value = CurrentValue
+                 }
+                 
                  local function Set(v)
                      v = math.clamp(v, Min, Max)
                      CurrentValue = v
+                     SliderObj.Value = v
                      TweenService:Create(Fill, TweenInfo.new(0.1), {Size = UDim2.new((v-Min)/(Max-Min), 0, 1, 0)}):Play()
                      Value.Text = math.floor(v*100)/100
                      pcall(Callback, v)
                  end
+                 
+                 SliderObj.Set = function(self, v) Set(v) end
+                 
                  local Dragging = false
                  Bg.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then Dragging = true Set(Min + ((Max-Min) * math.clamp((i.Position.X - Bg.AbsolutePosition.X)/Bg.AbsoluteSize.X, 0, 1))) end end)
                  InputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then Dragging = false end end)
                  InputService.InputChanged:Connect(function(i) if Dragging and i.UserInputType == Enum.UserInputType.MouseMovement then Set(Min + ((Max-Min) * math.clamp((i.Position.X - Bg.AbsolutePosition.X)/Bg.AbsoluteSize.X, 0, 1))) end end)
                  Set(Default or Min)
                  
-                 local SliderObj = {
-                     Type = "Slider",
-                     Value = CurrentValue,
-                     Set = function(self, v) Set(v) self.Value = CurrentValue end
-                 }
                  Library.Options[Text] = SliderObj
                  return SliderObj
             end
