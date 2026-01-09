@@ -1564,14 +1564,29 @@ function Library.SaveManager:Load(name)
     
     local loadedCount = 0
     for _, option in next, decoded.objects do
-        if self.Parser[option.type] then
-            local idx = option.idx
-            if Library.Options[idx] and Library.Options[idx].Set then
-                local ok = pcall(function()
-                    self.Parser[option.type].Load(idx, option)
-                end)
-                if ok then loadedCount = loadedCount + 1 end
-            end
+        local idx = option.idx
+        local optType = option.type
+        local optionObj = Library.Options[idx]
+        
+        if optionObj and optionObj.Set then
+            local ok = pcall(function()
+                if optType == "Toggle" then
+                    optionObj:Set(option.value)
+                elseif optType == "Slider" then
+                    optionObj:Set(option.value)
+                elseif optType == "Dropdown" then
+                    optionObj:Set(option.value)
+                elseif optType == "ColorPicker" then
+                    optionObj:Set(Color3.new(option.value[1], option.value[2], option.value[3]))
+                elseif optType == "Keybind" then
+                    if option.value ~= "None" then
+                        optionObj:Set(Enum.KeyCode[option.value])
+                    end
+                elseif optType == "Input" then
+                    optionObj:Set(option.value)
+                end
+            end)
+            if ok then loadedCount = loadedCount + 1 end
         end
     end
     
@@ -1604,11 +1619,25 @@ function Library.SaveManager:LoadAutoloadConfig()
     return false
 end
 
+function Library.SaveManager:GetAutoloadName()
+    local autoloadPath = self.Folder .. "/settings/autoload.txt"
+    if isfile(autoloadPath) then
+        local name = readfile(autoloadPath)
+        if name and name ~= "" then
+            return name
+        end
+    end
+    return "None"
+end
+
 function Library.SaveManager:BuildConfigSection(tab)
     local ConfigGroup = tab:AddRightGroupbox("Configuration")
     
     local configNameValue = ""
     local selectedConfig = ""
+    
+    -- Current Auto Load label
+    local autoloadLabel = ConfigGroup:AddLabel("Current Auto Load: " .. self:GetAutoloadName())
     
     ConfigGroup:AddInput("SaveManager_ConfigName", "Config name...", function(text)
         configNameValue = text
@@ -1695,6 +1724,7 @@ function Library.SaveManager:BuildConfigSection(tab)
         
         self:BuildFolderTree()
         writefile(self.Folder .. "/settings/autoload.txt", selectedConfig)
+        autoloadLabel:Set("Current Auto Load: " .. selectedConfig)
         Library:Notify("Config", "Auto-load set: " .. selectedConfig, 3, "check")
     end)
     
