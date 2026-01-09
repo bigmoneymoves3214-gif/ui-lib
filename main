@@ -7,35 +7,6 @@ local InputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
-local InsertService = game:GetService("InsertService")
-
--- Helper to get image from asset ID (handles decals)
-local function GetImageFromAsset(assetId)
-    if not assetId then return nil end
-    if type(assetId) == "string" and assetId:find("rbxassetid://") then
-        -- Try to load as decal and get the texture
-        local id = assetId:match("rbxassetid://(%d+)")
-        if id then
-            local success, result = pcall(function()
-                local asset = InsertService:LoadAsset(tonumber(id))
-                if asset then
-                    local decal = asset:FindFirstChildOfClass("Decal") or asset:FindFirstChildOfClass("Texture")
-                    if decal then
-                        local textureId = decal.Texture
-                        asset:Destroy()
-                        return textureId
-                    end
-                    asset:Destroy()
-                end
-                return assetId
-            end)
-            if success and result then
-                return result
-            end
-        end
-    end
-    return assetId
-end
 
 local Library = {
     Open = true,
@@ -442,8 +413,9 @@ function Library:CreateWindow(Settings)
         BackgroundTransparency = 1,
         Position = UDim2.new(0.5, -50, 0.35, -50),
         Size = UDim2.new(0, 100, 0, 100),
-        Image = GetImageFromAsset(Logo) or "rbxassetid://136163314754809",
-        ZIndex = 1001
+        Image = Logo or "rbxassetid://136163314754809",
+        ZIndex = 1001,
+        ScaleType = Enum.ScaleType.Fit
     })
     
     local LoadingBarBg = Create("Frame", {
@@ -574,6 +546,8 @@ function Library:CreateWindow(Settings)
     local Topbar = Create("Frame", {
         Name = "Topbar",
         Parent = Main,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 45)
     })
     MakeDraggable(Topbar, Main)
     
@@ -583,7 +557,7 @@ function Library:CreateWindow(Settings)
             BackgroundTransparency = 1,
             Position = UDim2.new(0, 15, 0, 7),
             Size = UDim2.new(0, 30, 0, 30),
-            Image = GetImageFromAsset(Logo) or Logo,
+            Image = Logo,
             ScaleType = Enum.ScaleType.Fit
         })
     end
