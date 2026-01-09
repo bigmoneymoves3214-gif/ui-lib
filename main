@@ -942,6 +942,11 @@ function Library:CreateWindow(Settings)
                 
                 local Open = false
                 
+                local DropdownObj = {
+                    Type = "Dropdown",
+                    Value = Default
+                }
+                
                 local function CreateOption(opt)
                     local OptBtn = Create("TextButton", {Parent = List, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,28), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
                     local OptText = Create("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-20,1,0), Font = Library.Font, TextColor3 = Library.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
@@ -964,24 +969,21 @@ function Library:CreateWindow(Settings)
                     end)
                 end
                 
-                local DropdownObj = {
-                    Type = "Dropdown",
-                    Value = Default,
-                    Set = function(self, v)
-                        BtnText.Text = tostring(v)
-                        self.Value = v
-                        pcall(Callback, v)
-                    end,
-                    Refresh = function(self, newOptions)
-                        for _, child in pairs(List:GetChildren()) do
-                            if child:IsA("TextButton") then child:Destroy() end
-                        end
-                        Options = newOptions
-                        for _, opt in pairs(Options) do
-                            CreateOption(opt)
-                        end
+                DropdownObj.Set = function(self, v)
+                    BtnText.Text = tostring(v)
+                    self.Value = v
+                    pcall(Callback, v)
+                end
+                
+                DropdownObj.Refresh = function(self, newOptions)
+                    for _, child in pairs(List:GetChildren()) do
+                        if child:IsA("TextButton") then child:Destroy() end
                     end
-                }
+                    Options = newOptions
+                    for _, opt in pairs(Options) do
+                        CreateOption(opt)
+                    end
+                end
                 
                 Btn.MouseEnter:Connect(function() 
                     TweenService:Create(DropStroke, TweenInfo.new(0.15), {Color = Library.AccentColor}):Play() 
