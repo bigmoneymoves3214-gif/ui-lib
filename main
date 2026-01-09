@@ -656,12 +656,24 @@ function Library:CreateWindow(Settings)
         })
         Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 6)})
         
+        -- Purple indicator bar on left
+        local TabIndicator = Create("Frame", {
+            Parent = TabBtn,
+            BackgroundColor3 = Library.AccentColor,
+            Size = UDim2.new(0, 3, 0, 18),
+            Position = UDim2.new(0, 0, 0.5, -9),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0
+        })
+        Create("UICorner", {Parent = TabIndicator, CornerRadius = UDim.new(0, 2)})
+        
         -- Tab Icon
+        local TabIcon = nil
         if IconId then
-            local TabIcon = Create("ImageLabel", {
+            TabIcon = Create("ImageLabel", {
                 Parent = TabBtn,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 10, 0.5, -9),
+                Position = UDim2.new(0, 12, 0.5, -9),
                 Size = UDim2.new(0, 18, 0, 18),
                 Image = IconId,
                 ImageColor3 = Library.Theme.TextDim
@@ -671,15 +683,15 @@ function Library:CreateWindow(Settings)
         local TitleLbl = Create("TextLabel", {
             Parent = TabBtn,
             BackgroundTransparency = 1,
-            Position = UDim2.new(0, IconId and 35 or 12, 0, 0),
-            Size = UDim2.new(1, IconId and -35 or -12, 1, 0),
+            Position = UDim2.new(0, IconId and 38 or 14, 0, 0),
+            Size = UDim2.new(1, IconId and -38 or -14, 1, 0),
             Text = Name,
             Font = Library.Font,
             TextColor3 = Library.Theme.TextDim,
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left
         })
-
+        
         local TabPage = Create("Frame", {
             Parent = Content,
             BackgroundTransparency = 1,
@@ -719,10 +731,16 @@ function Library:CreateWindow(Settings)
                 if v:IsA("TextButton") then 
                      TweenService:Create(v, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
                      TweenService:Create(v.TextLabel, TweenInfo.new(0.2), {TextColor3 = Library.Theme.TextDim}):Play()
+                     local indicator = v:FindFirstChild("Frame")
+                     if indicator then TweenService:Create(indicator, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play() end
+                     local icon = v:FindFirstChild("ImageLabel")
+                     if icon then TweenService:Create(icon, TweenInfo.new(0.2), {ImageColor3 = Library.Theme.TextDim}):Play() end
                 end
             end
             TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.95}):Play()
             TweenService:Create(TitleLbl, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text}):Play()
+            TweenService:Create(TabIndicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+            if TabIcon then TweenService:Create(TabIcon, TweenInfo.new(0.2), {ImageColor3 = Library.AccentColor}):Play() end
             
             for _, v in pairs(Content:GetChildren()) do v.Visible = false end
             TabPage.Visible = true
