@@ -910,7 +910,7 @@ function Library:CreateWindow(Settings)
                 end
             end
             TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.95}):Play()
-            TweenService:Create(TitleLbl, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text, TextSize = 22}):Play()
+            TweenService:Create(TitleLbl, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text, TextSize = 19}):Play()
             TweenService:Create(TabIndicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
             if TabIcon then TweenService:Create(TabIcon, TweenInfo.new(0.2), {ImageColor3 = Library.AccentColor}):Play() end
             
