@@ -447,9 +447,9 @@ function Library:CreateWindow(Settings)
     local LoadingLogo = Create("ImageLabel", {
         Parent = LoadingScreen,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0.5, 0, 0.35, 0),
+        Position = UDim2.new(0.5, 0, 0.4, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        Size = UDim2.new(0, 200, 0, 200),
+        Size = UDim2.new(0, 350, 0, 350),
         Image = Logo or "rbxassetid://136163314754809",
         ZIndex = 1001,
         ScaleType = Enum.ScaleType.Fit
@@ -910,7 +910,7 @@ function Library:CreateWindow(Settings)
                 end
             end
             TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.95}):Play()
-            TweenService:Create(TitleLbl, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text, TextSize = 16}):Play()
+            TweenService:Create(TitleLbl, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text, TextSize = 15}):Play()
             TweenService:Create(TabIndicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
             if TabIcon then TweenService:Create(TabIcon, TweenInfo.new(0.2), {ImageColor3 = Library.AccentColor}):Play() end
             
