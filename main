@@ -542,6 +542,106 @@ function Library:CreateWindow(Settings)
     AddShadow(Main, 0.2)
     Create("UIStroke", {Parent = Main, Color = Library.Theme.Outline, Thickness = 1})
 
+    -- Resize handles
+    local MIN_WIDTH = 600
+    local MIN_HEIGHT = 400
+    local HANDLE_SIZE = 8
+    
+    local function CreateResizeHandle(name, position, size, cursor)
+        local handle = Create("Frame", {
+            Name = name,
+            Parent = Main,
+            BackgroundTransparency = 1,
+            Position = position,
+            Size = size,
+            ZIndex = 10
+        })
+        return handle
+    end
+    
+    -- Bottom-right corner (main resize handle)
+    local ResizeBR = CreateResizeHandle("ResizeBR", 
+        UDim2.new(1, -HANDLE_SIZE, 1, -HANDLE_SIZE), 
+        UDim2.new(0, HANDLE_SIZE, 0, HANDLE_SIZE))
+    
+    -- Visual indicator for resize corner
+    local ResizeIcon = Create("Frame", {
+        Parent = ResizeBR,
+        BackgroundColor3 = Library.Theme.TextDim,
+        BackgroundTransparency = 0.5,
+        Position = UDim2.new(0.5, -2, 0.5, -2),
+        Size = UDim2.new(0, 4, 0, 4),
+        ZIndex = 11
+    })
+    Create("UICorner", {Parent = ResizeIcon, CornerRadius = UDim.new(1, 0)})
+    
+    -- Bottom edge
+    local ResizeB = CreateResizeHandle("ResizeB",
+        UDim2.new(0, HANDLE_SIZE, 1, -HANDLE_SIZE),
+        UDim2.new(1, -HANDLE_SIZE * 2, 0, HANDLE_SIZE))
+    
+    -- Right edge
+    local ResizeR = CreateResizeHandle("ResizeR",
+        UDim2.new(1, -HANDLE_SIZE, 0, 45),
+        UDim2.new(0, HANDLE_SIZE, 1, -45 - HANDLE_SIZE))
+    
+    -- Resize logic
+    local resizing = false
+    local resizeType = nil
+    local resizeStart = nil
+    local startSize = nil
+    local startPos = nil
+    
+    local function StartResize(handle, rType)
+        handle.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 and not Minimized then
+                resizing = true
+                resizeType = rType
+                resizeStart = Vector2.new(input.Position.X, input.Position.Y)
+                startSize = Main.AbsoluteSize
+                startPos = Main.AbsolutePosition
+            end
+        end)
+        
+        handle.MouseEnter:Connect(function()
+            TweenService:Create(ResizeIcon, TweenInfo.new(0.15), {BackgroundTransparency = 0, BackgroundColor3 = Library.AccentColor}):Play()
+        end)
+        handle.MouseLeave:Connect(function()
+            if not resizing then
+                TweenService:Create(ResizeIcon, TweenInfo.new(0.15), {BackgroundTransparency = 0.5, BackgroundColor3 = Library.Theme.TextDim}):Play()
+            end
+        end)
+    end
+    
+    StartResize(ResizeBR, "BR")
+    StartResize(ResizeB, "B")
+    StartResize(ResizeR, "R")
+    
+    InputService.InputChanged:Connect(function(input)
+        if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = Vector2.new(input.Position.X, input.Position.Y) - resizeStart
+            local newWidth = startSize.X
+            local newHeight = startSize.Y
+            
+            if resizeType == "BR" or resizeType == "R" then
+                newWidth = math.max(MIN_WIDTH, startSize.X + delta.X)
+            end
+            if resizeType == "BR" or resizeType == "B" then
+                newHeight = math.max(MIN_HEIGHT, startSize.Y + delta.Y)
+            end
+            
+            Main.Size = UDim2.new(0, newWidth, 0, newHeight)
+        end
+    end)
+    
+    InputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and resizing then
+            resizing = false
+            resizeType = nil
+            TweenService:Create(ResizeIcon, TweenInfo.new(0.15), {BackgroundTransparency = 0.5, BackgroundColor3 = Library.Theme.TextDim}):Play()
+        end
+    end)
+
     -- Topbar
     local Topbar = Create("Frame", {
         Name = "Topbar",
@@ -551,27 +651,31 @@ function Library:CreateWindow(Settings)
     })
     MakeDraggable(Topbar, Main)
     
-    if Logo then
+    local hasLogo = Logo and Logo ~= ""
+    
+    if hasLogo then
         local LogoImg = Create("ImageLabel", {
             Parent = Topbar,
             BackgroundTransparency = 1,
-            Position = UDim2.new(0, 15, 0, 7),
+            Position = UDim2.new(0, 15, 0.5, -15),
             Size = UDim2.new(0, 30, 0, 30),
             Image = Logo,
-            ScaleType = Enum.ScaleType.Fit
+            ScaleType = Enum.ScaleType.Fit,
+            ZIndex = 2
         })
     end
 
     local TopTitle = Create("TextLabel", {
         Parent = Topbar,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, Logo and 55 or 20, 0, 0),
-        Size = UDim2.new(1, -100, 1, 0),
+        Position = UDim2.new(0, hasLogo and 55 or 20, 0, 0),
+        Size = UDim2.new(1, hasLogo and -100 or -65, 1, 0),
         Font = Library.FontBold,
         Text = Title,
         TextColor3 = Library.Theme.Text,
         TextSize = 19,
-        TextXAlignment = Enum.TextXAlignment.Left
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 2
     })
     
     local MinBtn = Create("TextButton", {
@@ -583,7 +687,8 @@ function Library:CreateWindow(Settings)
         Font = Library.FontBold,
         TextColor3 = Library.Theme.TextDim,
         TextSize = 26,
-        AutoButtonColor = false
+        AutoButtonColor = false,
+        ZIndex = 2
     })
     
     MinBtn.MouseEnter:Connect(function() TweenService:Create(MinBtn, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text}):Play() end)
@@ -1338,6 +1443,10 @@ function Library:CreateWindow(Settings)
                     Set = function(self, key)
                         self.Value = key
                         Btn.Text = key and key.Name or "None"
+                        -- Update Library.ToggleKey if this is the menu toggle keybind
+                        if Text:lower():find("toggle") or Text:lower():find("menu") then
+                            Library.ToggleKey = key
+                        end
                         pcall(Callback, key)
                     end
                 }
