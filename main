@@ -1525,29 +1525,141 @@ function Library:CreateWindow(Settings)
                     TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = Library.Theme.TextDim}):Play()
                 end)
                 
-                local Listening = false
                 Btn.MouseButton1Click:Connect(function()
-                    if Listening then return end
-                    Listening = true
-                    Btn.Text = "..."
-                    TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = Library.AccentColor}):Play()
+                    -- Create modal overlay
+                    local Modal = Create("Frame", {
+                        Parent = ScreenGui,
+                        BackgroundColor3 = Color3.new(0, 0, 0),
+                        BackgroundTransparency = 0.5,
+                        Size = UDim2.new(1, 0, 1, 0),
+                        ZIndex = 5000
+                    })
                     
+                    local ModalBox = Create("Frame", {
+                        Parent = Modal,
+                        BackgroundColor3 = Library.Theme.Section,
+                        Position = UDim2.new(0.5, 0, 0.5, 0),
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Size = UDim2.new(0, 280, 0, 140),
+                        ZIndex = 5001
+                    })
+                    Create("UICorner", {Parent = ModalBox, CornerRadius = UDim.new(0, 8)})
+                    Create("UIStroke", {Parent = ModalBox, Color = Library.AccentColor, Thickness = 2})
+                    
+                    local ModalTitle = Create("TextLabel", {
+                        Parent = ModalBox,
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(0, 0, 0, 15),
+                        Size = UDim2.new(1, 0, 0, 25),
+                        Text = "Please Press Your Keybind",
+                        Font = Library.FontBold,
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 16,
+                        ZIndex = 5002
+                    })
+                    
+                    local ModalStatus = Create("TextLabel", {
+                        Parent = ModalBox,
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(0, 0, 0, 45),
+                        Size = UDim2.new(1, 0, 0, 20),
+                        Text = "Waiting for input...",
+                        Font = Library.Font,
+                        TextColor3 = Library.Theme.TextDim,
+                        TextSize = 14,
+                        ZIndex = 5002
+                    })
+                    
+                    local ButtonContainer = Create("Frame", {
+                        Parent = ModalBox,
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(0, 20, 1, -50),
+                        Size = UDim2.new(1, -40, 0, 35),
+                        ZIndex = 5002,
+                        Visible = false
+                    })
+                    
+                    local SaveBtn = Create("TextButton", {
+                        Parent = ButtonContainer,
+                        BackgroundColor3 = Library.AccentColor,
+                        Position = UDim2.new(0, 0, 0, 0),
+                        Size = UDim2.new(0.48, 0, 1, 0),
+                        Text = "Save",
+                        Font = Library.FontBold,
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 14,
+                        AutoButtonColor = false,
+                        ZIndex = 5003
+                    })
+                    Create("UICorner", {Parent = SaveBtn, CornerRadius = UDim.new(0, 6)})
+                    
+                    local ResetBtn = Create("TextButton", {
+                        Parent = ButtonContainer,
+                        BackgroundColor3 = Library.Theme.Element,
+                        Position = UDim2.new(0.52, 0, 0, 0),
+                        Size = UDim2.new(0.48, 0, 1, 0),
+                        Text = "Reset",
+                        Font = Library.FontBold,
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 14,
+                        AutoButtonColor = false,
+                        ZIndex = 5003
+                    })
+                    Create("UICorner", {Parent = ResetBtn, CornerRadius = UDim.new(0, 6)})
+                    Create("UIStroke", {Parent = ResetBtn, Color = Library.Theme.Outline, Thickness = 1})
+                    
+                    local pendingKey = nil
                     local con
                     con = InputService.InputBegan:Connect(function(input)
                         if input.UserInputType == Enum.UserInputType.Keyboard then
                             local key = input.KeyCode
-                            if key == Enum.KeyCode.Unknown then return end
-                            Listening = false
-                            KeybindObj.Value = key
-                            Btn.Text = key.Name
-                            TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = Library.Theme.Element}):Play()
-                            -- Update Library.ToggleKey if this is the menu toggle keybind
-                            if Text:lower():find("toggle") or Text:lower():find("menu") then
-                                Library.ToggleKey = key
+                            if key == Enum.KeyCode.Unknown or key == Enum.KeyCode.Escape then 
+                                Modal:Destroy()
+                                con:Disconnect()
+                                return 
                             end
-                            pcall(Callback, key)
+                            pendingKey = key
+                            ModalTitle.Text = "Keybind Set to " .. key.Name
+                            ModalStatus.Text = "Press Save to confirm or Reset to remove"
+                            ModalStatus.TextColor3 = Library.AccentColor
+                            ButtonContainer.Visible = true
                             con:Disconnect()
                         end
+                    end)
+                    
+                    SaveBtn.MouseButton1Click:Connect(function()
+                        if pendingKey then
+                            KeybindObj.Value = pendingKey
+                            Btn.Text = pendingKey.Name
+                            if Text:lower():find("toggle") or Text:lower():find("menu") then
+                                Library.ToggleKey = pendingKey
+                            end
+                            pcall(Callback, pendingKey)
+                        end
+                        Modal:Destroy()
+                    end)
+                    
+                    ResetBtn.MouseButton1Click:Connect(function()
+                        KeybindObj.Value = nil
+                        Btn.Text = "None"
+                        if Text:lower():find("toggle") or Text:lower():find("menu") then
+                            Library.ToggleKey = nil
+                        end
+                        pcall(Callback, nil)
+                        Modal:Destroy()
+                    end)
+                    
+                    SaveBtn.MouseEnter:Connect(function()
+                        TweenService:Create(SaveBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(116, 96, 255)}):Play()
+                    end)
+                    SaveBtn.MouseLeave:Connect(function()
+                        TweenService:Create(SaveBtn, TweenInfo.new(0.15), {BackgroundColor3 = Library.AccentColor}):Play()
+                    end)
+                    ResetBtn.MouseEnter:Connect(function()
+                        TweenService:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = Library.Theme.Error}):Play()
+                    end)
+                    ResetBtn.MouseLeave:Connect(function()
+                        TweenService:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = Library.Theme.Element}):Play()
                     end)
                 end)
                 
