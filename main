@@ -411,8 +411,8 @@ function Library:CreateWindow(Settings)
     local LoadingLogo = Create("ImageLabel", {
         Parent = LoadingScreen,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0.5, -50, 0.35, -50),
-        Size = UDim2.new(0, 100, 0, 100),
+        Position = UDim2.new(0.5, -100, 0.35, -100),
+        Size = UDim2.new(0, 200, 0, 200),
         Image = Logo or "rbxassetid://136163314754809",
         ZIndex = 1001,
         ScaleType = Enum.ScaleType.Fit
