@@ -1526,11 +1526,11 @@ function Library:CreateWindow(Settings)
                 end)
                 
                 Btn.MouseButton1Click:Connect(function()
-                    -- Create modal overlay
+                    -- Create modal overlay with dark purple tint
                     local Modal = Create("Frame", {
                         Parent = ScreenGui,
-                        BackgroundColor3 = Color3.new(0, 0, 0),
-                        BackgroundTransparency = 0.5,
+                        BackgroundColor3 = Color3.fromRGB(30, 20, 50),
+                        BackgroundTransparency = 0.3,
                         Size = UDim2.new(1, 0, 1, 0),
                         ZIndex = 5000
                     })
