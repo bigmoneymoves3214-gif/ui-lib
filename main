@@ -391,9 +391,42 @@ function Library:CreateWindow(Settings)
     local Title = Settings.Title or "UI"
     local Logo = Settings.Logo
     local Acrylic = Settings.Acrylic or false
+    local BrandingText = Settings.BrandingText
+    local BrandingPosition = Settings.BrandingPosition or "bottom-left" -- "bottom-left", "top-left", "top-right"
     
     local ScreenGui = Create("ScreenGui", { Name = "EvictedUI", IgnoreGuiInset = true, ResetOnSpawn = false })
     ProtectGui(ScreenGui)
+    
+    -- Branding watermark
+    if BrandingText then
+        local brandPos
+        if BrandingPosition == "top-left" then
+            brandPos = UDim2.new(0, 80, 0, 5) -- Right of chat icon
+        elseif BrandingPosition == "top-right" then
+            brandPos = UDim2.new(1, -10, 0, 5)
+        else -- bottom-left default
+            brandPos = UDim2.new(0, 10, 1, -30)
+        end
+        
+        local BrandingLabel = Create("TextLabel", {
+            Parent = ScreenGui,
+            Name = "Branding",
+            BackgroundTransparency = 1,
+            Position = brandPos,
+            Size = UDim2.new(0, 200, 0, 20),
+            Text = BrandingText,
+            Font = Library.FontBold,
+            TextColor3 = Library.AccentColor,
+            TextSize = 14,
+            TextXAlignment = BrandingPosition == "top-right" and Enum.TextXAlignment.Right or Enum.TextXAlignment.Left,
+            TextStrokeTransparency = 0.8,
+            TextStrokeColor3 = Color3.new(0, 0, 0),
+            ZIndex = 100
+        })
+        
+        -- Store reference for potential updates
+        Library.BrandingLabel = BrandingLabel
+    end
     
     -- Loading Screen (same size as menu)
     local LoadingScreen = Create("Frame", {
@@ -412,7 +445,7 @@ function Library:CreateWindow(Settings)
         Parent = LoadingScreen,
         BackgroundTransparency = 1,
         Position = UDim2.new(0.5, -100, 0.35, -100),
-        Size = UDim2.new(0, 200, 0, 200),
+        Size = UDim2.new(0, 250, 0, 250),
         Image = Logo or "rbxassetid://136163314754809",
         ZIndex = 1001,
         ScaleType = Enum.ScaleType.Fit
