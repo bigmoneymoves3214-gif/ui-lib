@@ -400,10 +400,12 @@ function Library:CreateWindow(Settings)
     -- Branding watermark
     if BrandingText then
         local brandPos
+        local brandAnchor = Vector2.new(0, 0)
         if BrandingPosition == "top-left" then
             brandPos = UDim2.new(0, 80, 0, 5) -- Right of chat icon
         elseif BrandingPosition == "top-right" then
             brandPos = UDim2.new(1, -10, 0, 5)
+            brandAnchor = Vector2.new(1, 0) -- Anchor to right side
         else -- bottom-left default
             brandPos = UDim2.new(0, 10, 1, -30)
         end
@@ -413,7 +415,8 @@ function Library:CreateWindow(Settings)
             Name = "Branding",
             BackgroundTransparency = 1,
             Position = brandPos,
-            Size = UDim2.new(0, 200, 0, 20),
+            AnchorPoint = brandAnchor,
+            Size = UDim2.new(0, 300, 0, 20),
             Text = BrandingText,
             Font = Library.FontBold,
             TextColor3 = Library.AccentColor,
@@ -444,8 +447,9 @@ function Library:CreateWindow(Settings)
     local LoadingLogo = Create("ImageLabel", {
         Parent = LoadingScreen,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0.5, -100, 0.35, -100),
-        Size = UDim2.new(0, 250, 0, 250),
+        Position = UDim2.new(0.5, 0, 0.35, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Size = UDim2.new(0, 200, 0, 200),
         Image = Logo or "rbxassetid://136163314754809",
         ZIndex = 1001,
         ScaleType = Enum.ScaleType.Fit
@@ -454,8 +458,9 @@ function Library:CreateWindow(Settings)
     local LoadingBarBg = Create("Frame", {
         Parent = LoadingScreen,
         BackgroundColor3 = Library.Theme.Element,
-        Position = UDim2.new(0.5, -150, 0.6, 0),
-        Size = UDim2.new(0, 300, 0, 8),
+        Position = UDim2.new(0.5, 0, 0.65, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Size = UDim2.new(0, 250, 0, 4),
         ZIndex = 1001,
         BorderSizePixel = 0
     })
