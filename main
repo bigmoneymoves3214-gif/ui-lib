@@ -484,7 +484,7 @@ function Library:CreateWindow(Settings)
         Name = "CustomCursor",
         BackgroundTransparency = 1,
         Size = UDim2.new(0, 20, 0, 20),
-        Image = "rbxassetid://6764432293",
+        Image = "rbxassetid://102366537072878",
         ImageColor3 = Library.Theme.Text,
         ZIndex = 9999,
         Visible = true
@@ -495,7 +495,7 @@ function Library:CreateWindow(Settings)
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 2, 0, 2),
         Size = UDim2.new(1, 0, 1, 0),
-        Image = "rbxassetid://6764432293",
+        Image = "rbxassetid://102366537072878",
         ImageColor3 = Color3.new(0, 0, 0),
         ImageTransparency = 0.7,
         ZIndex = 9998
