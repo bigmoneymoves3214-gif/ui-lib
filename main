@@ -1292,35 +1292,32 @@ function Library:CreateWindow(Settings)
                 local OptionButtons = {}
                 
                 local function CreateOption(opt)
-                    local OptBtn = Create("TextButton", {Parent = List, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,28), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
+                    local OptBtn = Create("TextButton", {Parent = List, BackgroundTransparency = Selected[opt] and 0 or 1, BackgroundColor3 = Library.AccentColor, Size = UDim2.new(1,0,0,28), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
+                    local OptText = Create("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-20,1,0), Font = Library.Font, TextColor3 = Selected[opt] and Library.Theme.Text or Library.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
                     
-                    local Check = Create("Frame", {Parent = OptBtn, BackgroundColor3 = Selected[opt] and Library.AccentColor or Library.Theme.Element, Size = UDim2.new(0,16,0,16), Position = UDim2.new(0,8,0.5,-8), BorderSizePixel = 0, ZIndex = 53})
-                    Create("UICorner", {Parent = Check, CornerRadius = UDim.new(0,4)})
-                    Create("UIStroke", {Parent = Check, Color = Library.Theme.Outline, Thickness = 1})
-                    
-                    local Checkmark = Create("TextLabel", {Parent = Check, Text = "✓", Font = Library.FontBold, TextColor3 = Library.Theme.Text, TextSize = 12, Size = UDim2.new(1,0,1,0), BackgroundTransparency = 1, TextTransparency = Selected[opt] and 0 or 1, ZIndex = 54})
-                    
-                    local OptText = Create("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,32,0,0), Size = UDim2.new(1,-40,1,0), Font = Library.Font, TextColor3 = Selected[opt] and Library.Theme.Text or Library.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
-                    
-                    OptionButtons[opt] = {Btn = OptBtn, Check = Check, Checkmark = Checkmark, Text = OptText}
+                    OptionButtons[opt] = {Btn = OptBtn, Text = OptText}
                     
                     local function UpdateOption()
                         if Selected[opt] then
-                            TweenService:Create(Check, TweenInfo.new(0.15), {BackgroundColor3 = Library.AccentColor}):Play()
-                            TweenService:Create(Checkmark, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
-                            TweenService:Create(OptText, TweenInfo.new(0.15), {TextColor3 = Library.Theme.Text}):Play()
+                            TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = Library.AccentColor}):Play()
+                            TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = Library.Theme.Text}):Play()
                         else
-                            TweenService:Create(Check, TweenInfo.new(0.15), {BackgroundColor3 = Library.Theme.Element}):Play()
-                            TweenService:Create(Checkmark, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
-                            TweenService:Create(OptText, TweenInfo.new(0.15), {TextColor3 = Library.Theme.TextDim}):Play()
+                            TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play()
+                            TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = Library.Theme.TextDim}):Play()
                         end
                     end
                     
                     OptBtn.MouseEnter:Connect(function() 
-                        TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0.9, BackgroundColor3 = Library.AccentColor}):Play() 
+                        if not Selected[opt] then
+                            TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = Library.AccentColor}):Play()
+                        end
+                        TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = Library.Theme.Text}):Play()
                     end)
                     OptBtn.MouseLeave:Connect(function() 
-                        TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play() 
+                        if not Selected[opt] then
+                            TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play()
+                            TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = Library.Theme.TextDim}):Play()
+                        end
                     end)
                     OptBtn.MouseButton1Click:Connect(function()
                         Selected[opt] = not Selected[opt]
@@ -1341,12 +1338,11 @@ function Library:CreateWindow(Settings)
                     -- Update visual state of all options
                     for opt, elements in pairs(OptionButtons) do
                         if Selected[opt] then
-                            elements.Check.BackgroundColor3 = Library.AccentColor
-                            elements.Checkmark.TextTransparency = 0
+                            elements.Btn.BackgroundTransparency = 0
+                            elements.Btn.BackgroundColor3 = Library.AccentColor
                             elements.Text.TextColor3 = Library.Theme.Text
                         else
-                            elements.Check.BackgroundColor3 = Library.Theme.Element
-                            elements.Checkmark.TextTransparency = 1
+                            elements.Btn.BackgroundTransparency = 1
                             elements.Text.TextColor3 = Library.Theme.TextDim
                         end
                     end
