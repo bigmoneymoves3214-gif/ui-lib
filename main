@@ -594,6 +594,16 @@ function Library:CreateWindow(Settings)
     AddShadow(Main, 0.2)
     Create("UIStroke", {Parent = Main, Color = Library.Theme.Outline, Thickness = 1})
 
+    -- Store reference for acrylic toggle
+    Library.MainFrame = Main
+    Library.Acrylic = Acrylic
+    
+    function Library:SetAcrylic(enabled)
+        Library.Acrylic = enabled
+        local targetTransparency = enabled and 0.3 or 0
+        TweenService:Create(Library.MainFrame, TweenInfo.new(0.3), {BackgroundTransparency = targetTransparency}):Play()
+    end
+
     -- Resize handles
     local MIN_WIDTH = 600
     local MIN_HEIGHT = 400
@@ -889,7 +899,10 @@ function Library:CreateWindow(Settings)
             for _, v in pairs(TabContainer:GetChildren()) do
                 if v:IsA("TextButton") then 
                      TweenService:Create(v, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
-                     TweenService:Create(v.TextLabel, TweenInfo.new(0.2), {TextColor3 = Library.Theme.TextDim}):Play()
+                     local titleLabel = v:FindFirstChild("TextLabel")
+                     if titleLabel then 
+                         TweenService:Create(titleLabel, TweenInfo.new(0.2), {TextColor3 = Library.Theme.TextDim, TextSize = 14}):Play()
+                     end
                      local indicator = v:FindFirstChild("Frame")
                      if indicator then TweenService:Create(indicator, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play() end
                      local icon = v:FindFirstChild("ImageLabel")
@@ -897,7 +910,7 @@ function Library:CreateWindow(Settings)
                 end
             end
             TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.95}):Play()
-            TweenService:Create(TitleLbl, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text}):Play()
+            TweenService:Create(TitleLbl, TweenInfo.new(0.2), {TextColor3 = Library.Theme.Text, TextSize = 22}):Play()
             TweenService:Create(TabIndicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
             if TabIcon then TweenService:Create(TabIcon, TweenInfo.new(0.2), {ImageColor3 = Library.AccentColor}):Play() end
             
