@@ -1962,6 +1962,25 @@ Library.SaveManager = {
                     Library.Options[idx]:Set(data.value)
                 end
             end
+        },
+        MultiDropdown = {
+            Save = function(idx, object)
+                -- Convert dictionary {[option] = true} to array of selected options
+                local selectedArray = {}
+                if type(object.Value) == "table" then
+                    for opt, isSelected in pairs(object.Value) do
+                        if isSelected then
+                            table.insert(selectedArray, opt)
+                        end
+                    end
+                end
+                return { type = "MultiDropdown", idx = idx, value = selectedArray }
+            end,
+            Load = function(idx, data)
+                if Library.Options[idx] and Library.Options[idx].Set then
+                    Library.Options[idx]:Set(data.value)
+                end
+            end
         }
     }
 }
@@ -2050,6 +2069,8 @@ function Library.SaveManager:Load(name)
                 elseif optType == "Slider" then
                     optionObj:Set(option.value)
                 elseif optType == "Dropdown" then
+                    optionObj:Set(option.value)
+                elseif optType == "MultiDropdown" then
                     optionObj:Set(option.value)
                 elseif optType == "ColorPicker" then
                     optionObj:Set(Color3.new(option.value[1], option.value[2], option.value[3]))
