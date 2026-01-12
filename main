@@ -332,7 +332,8 @@ function Library:Notify(Title, Content, Duration, IconType)
         Parent = NotificationHolder,
         BackgroundColor3 = Library.Theme.Section,
         Size = UDim2.new(1, -10, 0, 0),
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        ClipsDescendants = true
     })
     Create("UICorner", {Parent = Notif, CornerRadius = UDim.new(0, 6)})
     Create("UIStroke", {Parent = Notif, Color = Library.Theme.Outline, Thickness = 1})
@@ -361,13 +362,15 @@ function Library:Notify(Title, Content, Duration, IconType)
     local ContentLbl = Create("TextLabel", {
         Parent = Notif, 
         Text = Content, 
-        Position = UDim2.new(0, 48, 0, 24), 
-        Size = UDim2.new(1, -56, 0, 14), 
+        Position = UDim2.new(0, 48, 0, 26), 
+        Size = UDim2.new(1, -56, 0, 1000), 
         Font = Library.Font, 
         TextColor3 = Library.Theme.TextDim, 
         TextSize = 12, 
         TextXAlignment = Enum.TextXAlignment.Left, 
-        BackgroundTransparency = 1
+        TextYAlignment = Enum.TextYAlignment.Top,
+        BackgroundTransparency = 1,
+        TextWrapped = true
     })
     
     local Bar = Create("Frame", {
@@ -379,7 +382,19 @@ function Library:Notify(Title, Content, Duration, IconType)
     })
     Create("UICorner", {Parent = Bar, CornerRadius = UDim.new(0, 6)})
     
-    TweenService:Create(Notif, TweenInfo.new(0.3), {Size = UDim2.new(1, -10, 0, 50)}):Play()
+    -- Calculate height based on content text
+    local textBounds = game:GetService("TextService"):GetTextSize(
+        Content, 
+        12, 
+        Library.Font, 
+        Vector2.new(290 - 56, 1000)
+    )
+    local contentHeight = math.max(textBounds.Y, 14)
+    local notifHeight = math.max(50, 26 + contentHeight + 10)
+    
+    ContentLbl.Size = UDim2.new(1, -56, 0, contentHeight)
+    
+    TweenService:Create(Notif, TweenInfo.new(0.3), {Size = UDim2.new(1, -10, 0, notifHeight)}):Play()
     task.delay(Duration, function()
         TweenService:Create(Notif, TweenInfo.new(0.3), {Size = UDim2.new(1, -10, 0, 0)}):Play()
         task.wait(0.3)
@@ -1962,25 +1977,6 @@ Library.SaveManager = {
                     Library.Options[idx]:Set(data.value)
                 end
             end
-        },
-        MultiDropdown = {
-            Save = function(idx, object)
-                -- Convert dictionary {[option] = true} to array of selected options
-                local selectedArray = {}
-                if type(object.Value) == "table" then
-                    for opt, isSelected in pairs(object.Value) do
-                        if isSelected then
-                            table.insert(selectedArray, opt)
-                        end
-                    end
-                end
-                return { type = "MultiDropdown", idx = idx, value = selectedArray }
-            end,
-            Load = function(idx, data)
-                if Library.Options[idx] and Library.Options[idx].Set then
-                    Library.Options[idx]:Set(data.value)
-                end
-            end
         }
     }
 }
@@ -2069,8 +2065,6 @@ function Library.SaveManager:Load(name)
                 elseif optType == "Slider" then
                     optionObj:Set(option.value)
                 elseif optType == "Dropdown" then
-                    optionObj:Set(option.value)
-                elseif optType == "MultiDropdown" then
                     optionObj:Set(option.value)
                 elseif optType == "ColorPicker" then
                     optionObj:Set(Color3.new(option.value[1], option.value[2], option.value[3]))
