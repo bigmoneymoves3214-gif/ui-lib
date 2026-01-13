@@ -1977,6 +1977,26 @@ Library.SaveManager = {
                     Library.Options[idx]:Set(data.value)
                 end
             end
+        },
+        MultiDropdown = {
+            Save = function(idx, object)
+                -- Convert the dictionary {["opt1"] = true, ["opt2"] = true} to array {"opt1", "opt2"}
+                local selectedArray = {}
+                if type(object.Value) == "table" then
+                    for opt, isSelected in pairs(object.Value) do
+                        if isSelected then
+                            table.insert(selectedArray, opt)
+                        end
+                    end
+                end
+                return { type = "MultiDropdown", idx = idx, value = selectedArray }
+            end,
+            Load = function(idx, data)
+                if Library.Options[idx] and Library.Options[idx].Set then
+                    -- data.value is already an array, Set expects an array
+                    Library.Options[idx]:Set(data.value or {})
+                end
+            end
         }
     }
 }
@@ -2103,7 +2123,7 @@ function Library.SaveManager:LoadAutoloadConfig()
         if name and name ~= "" then
             local success, count = self:Load(name)
             if success then
-                Library:Notify("Config", "Auto-loaded: " .. name .. " (" .. tostring(count or 0) .. " settings)", 3, "check")
+                Library:Notify("Config", "Auto-loaded: " .. name .. " (" .. tostring(count or 0) .. " settings)", 3, "folder")
             else
                 Library:Notify("Config", "Failed to auto-load: " .. name, 3, "error")
             end
@@ -2155,7 +2175,7 @@ function Library.SaveManager:BuildConfigSection(tab)
             return Library:Notify("Config", "Failed to save: " .. (err or "unknown"), 3, "error")
         end
         
-        Library:Notify("Config", "Created: " .. name, 3, "check")
+        Library:Notify("Config", "Created: " .. name, 3, "folder")
         
         if dropdownRef and dropdownRef.Refresh then
             dropdownRef:Refresh(self:RefreshConfigList())
@@ -2172,7 +2192,7 @@ function Library.SaveManager:BuildConfigSection(tab)
             return Library:Notify("Config", "Failed to load: " .. (err or "unknown"), 3, "error")
         end
         
-        Library:Notify("Config", "Loaded: " .. selectedConfig, 3, "check")
+        Library:Notify("Config", "Loaded: " .. selectedConfig, 3, "folder")
     end)
     
     ConfigGroup:AddButton("Overwrite Config", function()
@@ -2185,7 +2205,7 @@ function Library.SaveManager:BuildConfigSection(tab)
             return Library:Notify("Config", "Failed to save: " .. (err or "unknown"), 3, "error")
         end
         
-        Library:Notify("Config", "Overwrote: " .. selectedConfig, 3, "check")
+        Library:Notify("Config", "Overwrote: " .. selectedConfig, 3, "folder")
     end)
     
     ConfigGroup:AddButton("Delete Config", function()
@@ -2194,7 +2214,7 @@ function Library.SaveManager:BuildConfigSection(tab)
         end
         
         if self:Delete(selectedConfig) then
-            Library:Notify("Config", "Deleted: " .. selectedConfig, 3, "check")
+            Library:Notify("Config", "Deleted: " .. selectedConfig, 3, "trash")
             selectedConfig = ""
             if dropdownRef and dropdownRef.Refresh then
                 dropdownRef:Refresh(self:RefreshConfigList())
@@ -2208,7 +2228,7 @@ function Library.SaveManager:BuildConfigSection(tab)
         if dropdownRef and dropdownRef.Refresh then
             dropdownRef:Refresh(self:RefreshConfigList())
         end
-        Library:Notify("Config", "Refreshed config list", 2, "info")
+        Library:Notify("Config", "Refreshed config list", 2, "refresh")
     end)
     
     ConfigGroup:AddButton("Set as Auto-Load", function()
@@ -2219,7 +2239,7 @@ function Library.SaveManager:BuildConfigSection(tab)
         self:BuildFolderTree()
         writefile(self.Folder .. "/settings/autoload.txt", selectedConfig)
         autoloadLabel:Set("Current Auto Load: " .. selectedConfig)
-        Library:Notify("Config", "Auto-load set: " .. selectedConfig, 3, "check")
+        Library:Notify("Config", "Auto-load set: " .. selectedConfig, 3, "folder")
     end)
     
     self:SetIgnoreIndexes({"SaveManager_ConfigName", "SaveManager_ConfigList"})
