@@ -2101,6 +2101,15 @@ function Library.SaveManager:Load(name)
             else
                 warn("Failed to load " .. idx .. ": " .. tostring(err))
             end
+        elseif optType == "MultiDropdown" and optionObj and optionObj.Set then
+            local ok, err = pcall(function()
+                optionObj:Set(option.value or {})
+            end)
+            if ok then 
+                loadedCount = loadedCount + 1 
+            else
+                warn("Failed to load MultiDropdown " .. idx .. ": " .. tostring(err))
+            end
         end
     end
     
