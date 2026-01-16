@@ -2073,7 +2073,22 @@ function Library.SaveManager:Load(name)
     if not success then return false, "decode error" end
     
     local loadedCount = 0
+    
+    -- Load order: MultiDropdowns and Dropdowns first, then other settings, Toggles last
+    -- This ensures data is populated before toggles fire their callbacks
+    local toggles = {}
+    local others = {}
+    
     for _, option in next, decoded.objects do
+        if option.type == "Toggle" then
+            table.insert(toggles, option)
+        else
+            table.insert(others, option)
+        end
+    end
+    
+    -- Helper function to load a single option
+    local function loadOption(option)
         local idx = option.idx
         local optType = option.type
         local optionObj = Library.Options[idx]
@@ -2104,6 +2119,19 @@ function Library.SaveManager:Load(name)
                 warn("Failed to load " .. idx .. ": " .. tostring(err))
             end
         end
+    end
+    
+    -- Load non-toggles first (dropdowns, sliders, inputs, etc.)
+    for _, option in ipairs(others) do
+        loadOption(option)
+    end
+    
+    -- Small delay to ensure callbacks complete before loading toggles
+    task.wait(0.1)
+    
+    -- Load toggles last so they have access to populated data
+    for _, option in ipairs(toggles) do
+        loadOption(option)
     end
     
     return true, loadedCount
