@@ -273,9 +273,18 @@ local Library = {
 local NotificationHolder
 
 local function ProtectGui(gui)
-    if gethui then gui.Parent = gethui() 
-    elseif syn and syn.protect_gui then syn.protect_gui(gui) gui.Parent = CoreGui 
-    else gui.Parent = CoreGui end
+    local _cloneref = cloneref or function(x) return x end
+    -- Check for hidden container in _G (set by priv.lua)
+    if _G._GuiContainer then
+        gui.Parent = _G._GuiContainer
+    elseif gethui then 
+        gui.Parent = _cloneref(gethui())
+    elseif syn and syn.protect_gui then 
+        syn.protect_gui(gui) 
+        gui.Parent = _cloneref(CoreGui)
+    else 
+        gui.Parent = _cloneref(CoreGui) 
+    end
 end
 
 local function Create(class, properties)
@@ -2276,5 +2285,447 @@ function Library.SaveManager:BuildConfigSection(tab)
 end
 
 Library.SaveManager:BuildFolderTree()
+
+---------------------------------------------------------------------
+-- AUTO PARRY CONFIG POPUP
+---------------------------------------------------------------------
+local ActiveParryConfig = nil
+
+function Library:CreateAutoParryConfigPopup(movesData, onSave)
+    -- Close existing popup if open
+    if ActiveParryConfig then
+        ActiveParryConfig:Destroy()
+        ActiveParryConfig = nil
+    end
+    
+    local ScreenGui = self.ScreenGui
+    if not ScreenGui then return end
+    
+    -- Calculate position (center of screen)
+    local viewportSize = workspace.CurrentCamera.ViewportSize
+    local popupWidth = 500
+    local popupHeight = 550
+    local popupX = (viewportSize.X - popupWidth) / 2
+    local popupY = (viewportSize.Y - popupHeight) / 2
+    
+    -- Main popup frame
+    local Popup = Create("Frame", {
+        Parent = ScreenGui,
+        BackgroundColor3 = self.Theme.Section,
+        Position = UDim2.new(0, popupX, 0, popupY),
+        Size = UDim2.new(0, popupWidth, 0, popupHeight),
+        BorderSizePixel = 0,
+        ZIndex = 100
+    })
+    ActiveParryConfig = Popup
+    Create("UICorner", {Parent = Popup, CornerRadius = UDim.new(0, 10)})
+    Create("UIStroke", {Parent = Popup, Color = self.AccentColor, Thickness = 2})
+    AddShadow(Popup, 0.4)
+    
+    -- Topbar for dragging
+    local Topbar = Create("Frame", {Parent = Popup, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 40)})
+    MakeDraggable(Topbar, Popup)
+    
+    -- Title
+    Create("TextLabel", {
+        Parent = Popup,
+        Text = "Auto Parry Configuration",
+        Position = UDim2.new(0, 15, 0, 10),
+        Size = UDim2.new(1, -80, 0, 25),
+        Font = self.FontBold,
+        TextColor3 = self.Theme.Text,
+        TextSize = 16,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        BackgroundTransparency = 1,
+        ZIndex = 101
+    })
+    
+    -- Close button
+    local CloseBtn = Create("TextButton", {
+        Parent = Popup,
+        Text = "×",
+        Position = UDim2.new(1, -35, 0, 8),
+        Size = UDim2.new(0, 28, 0, 28),
+        BackgroundTransparency = 1,
+        Font = self.FontBold,
+        TextColor3 = self.Theme.TextDim,
+        TextSize = 24,
+        AutoButtonColor = false,
+        ZIndex = 101
+    })
+    CloseBtn.MouseEnter:Connect(function()
+        TweenService:Create(CloseBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255, 100, 100)}):Play()
+    end)
+    CloseBtn.MouseLeave:Connect(function()
+        TweenService:Create(CloseBtn, TweenInfo.new(0.15), {TextColor3 = self.Theme.TextDim}):Play()
+    end)
+    CloseBtn.MouseButton1Click:Connect(function()
+        Popup:Destroy()
+        ActiveParryConfig = nil
+    end)
+    
+    -- Scrolling frame for moves
+    local ScrollFrame = Create("ScrollingFrame", {
+        Parent = Popup,
+        Position = UDim2.new(0, 10, 0, 45),
+        Size = UDim2.new(1, -20, 1, -100),
+        BackgroundColor3 = self.Theme.Element,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 6,
+        ScrollBarImageColor3 = self.AccentColor,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 101
+    })
+    Create("UICorner", {Parent = ScrollFrame, CornerRadius = UDim.new(0, 8)})
+    
+    local ListLayout = Create("UIListLayout", {
+        Parent = ScrollFrame,
+        Padding = UDim.new(0, 5),
+        SortOrder = Enum.SortOrder.LayoutOrder
+    })
+    
+    Create("UIPadding", {Parent = ScrollFrame, PaddingTop = UDim.new(0, 5), PaddingLeft = UDim.new(0, 5), PaddingRight = UDim.new(0, 5)})
+    
+    -- Function to create move entry
+    local function createMoveEntry(moveData, index)
+        local EntryFrame = Create("Frame", {
+            Parent = ScrollFrame,
+            Size = UDim2.new(1, -15, 0, 90),
+            BackgroundColor3 = self.Theme.Section,
+            BorderSizePixel = 0,
+            LayoutOrder = index,
+            ZIndex = 102
+        })
+        Create("UICorner", {Parent = EntryFrame, CornerRadius = UDim.new(0, 6)})
+        
+        -- Enable toggle
+        local ToggleBtn = Create("TextButton", {
+            Parent = EntryFrame,
+            Size = UDim2.new(0, 36, 0, 18),
+            Position = UDim2.new(0, 8, 0, 8),
+            BackgroundColor3 = moveData.enabled and self.AccentColor or Color3.fromRGB(80, 80, 80),
+            BorderSizePixel = 0,
+            Text = "",
+            AutoButtonColor = false,
+            ZIndex = 103
+        })
+        Create("UICorner", {Parent = ToggleBtn, CornerRadius = UDim.new(1, 0)})
+        
+        local ToggleCircle = Create("Frame", {
+            Parent = ToggleBtn,
+            Size = UDim2.new(0, 12, 0, 12),
+            Position = moveData.enabled and UDim2.new(1, -15, 0.5, -6) or UDim2.new(0, 3, 0.5, -6),
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BorderSizePixel = 0,
+            ZIndex = 104
+        })
+        Create("UICorner", {Parent = ToggleCircle, CornerRadius = UDim.new(1, 0)})
+        
+        ToggleBtn.MouseButton1Click:Connect(function()
+            moveData.enabled = not moveData.enabled
+            TweenService:Create(ToggleBtn, TweenInfo.new(0.2), {
+                BackgroundColor3 = moveData.enabled and self.AccentColor or Color3.fromRGB(80, 80, 80)
+            }):Play()
+            TweenService:Create(ToggleCircle, TweenInfo.new(0.2), {
+                Position = moveData.enabled and UDim2.new(1, -15, 0.5, -6) or UDim2.new(0, 3, 0.5, -6)
+            }):Play()
+        end)
+        
+        -- Move name
+        Create("TextLabel", {
+            Parent = EntryFrame,
+            Text = moveData.name,
+            Position = UDim2.new(0, 50, 0, 6),
+            Size = UDim2.new(0, 150, 0, 20),
+            Font = self.FontBold,
+            TextColor3 = self.Theme.Text,
+            TextSize = 13,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BackgroundTransparency = 1,
+            ZIndex = 103
+        })
+        
+        -- Type label
+        Create("TextLabel", {
+            Parent = EntryFrame,
+            Text = "[" .. moveData.type .. "]",
+            Position = UDim2.new(0, 200, 0, 6),
+            Size = UDim2.new(0, 80, 0, 20),
+            Font = self.Font,
+            TextColor3 = self.Theme.TextDim,
+            TextSize = 11,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BackgroundTransparency = 1,
+            ZIndex = 103
+        })
+        
+        -- Row 1: Detection Range & Parry Range
+        Create("TextLabel", {
+            Parent = EntryFrame,
+            Text = "Detection:",
+            Position = UDim2.new(0, 8, 0, 32),
+            Size = UDim2.new(0, 55, 0, 16),
+            Font = self.Font,
+            TextColor3 = self.Theme.TextDim,
+            TextSize = 10,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BackgroundTransparency = 1,
+            ZIndex = 103
+        })
+        
+        local DetectionInput = Create("TextBox", {
+            Parent = EntryFrame,
+            Size = UDim2.new(0, 40, 0, 18),
+            Position = UDim2.new(0, 65, 0, 31),
+            BackgroundColor3 = self.Theme.Element,
+            BorderSizePixel = 0,
+            Text = tostring(moveData.detectionRange),
+            Font = self.Font,
+            TextColor3 = self.Theme.Text,
+            TextSize = 11,
+            ZIndex = 103
+        })
+        Create("UICorner", {Parent = DetectionInput, CornerRadius = UDim.new(0, 4)})
+        
+        DetectionInput.FocusLost:Connect(function()
+            local num = tonumber(DetectionInput.Text)
+            if num and num > 0 then
+                moveData.detectionRange = num
+            else
+                DetectionInput.Text = tostring(moveData.detectionRange)
+            end
+        end)
+        
+        Create("TextLabel", {
+            Parent = EntryFrame,
+            Text = "Parry:",
+            Position = UDim2.new(0, 115, 0, 32),
+            Size = UDim2.new(0, 35, 0, 16),
+            Font = self.Font,
+            TextColor3 = self.Theme.TextDim,
+            TextSize = 10,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BackgroundTransparency = 1,
+            ZIndex = 103
+        })
+        
+        local ParryInput = Create("TextBox", {
+            Parent = EntryFrame,
+            Size = UDim2.new(0, 40, 0, 18),
+            Position = UDim2.new(0, 150, 0, 31),
+            BackgroundColor3 = self.Theme.Element,
+            BorderSizePixel = 0,
+            Text = tostring(moveData.parryRange),
+            Font = self.Font,
+            TextColor3 = self.Theme.Text,
+            TextSize = 11,
+            ZIndex = 103
+        })
+        Create("UICorner", {Parent = ParryInput, CornerRadius = UDim.new(0, 4)})
+        
+        ParryInput.FocusLost:Connect(function()
+            local num = tonumber(ParryInput.Text)
+            if num and num > 0 then
+                moveData.parryRange = num
+            else
+                ParryInput.Text = tostring(moveData.parryRange)
+            end
+        end)
+        
+        -- Row 2: Parry Delay & Block Duration
+        Create("TextLabel", {
+            Parent = EntryFrame,
+            Text = "Delay:",
+            Position = UDim2.new(0, 8, 0, 55),
+            Size = UDim2.new(0, 40, 0, 16),
+            Font = self.Font,
+            TextColor3 = self.Theme.TextDim,
+            TextSize = 10,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BackgroundTransparency = 1,
+            ZIndex = 103
+        })
+        
+        local DelayInput = Create("TextBox", {
+            Parent = EntryFrame,
+            Size = UDim2.new(0, 40, 0, 18),
+            Position = UDim2.new(0, 45, 0, 54),
+            BackgroundColor3 = self.Theme.Element,
+            BorderSizePixel = 0,
+            Text = tostring(moveData.parryDelay),
+            Font = self.Font,
+            TextColor3 = self.Theme.Text,
+            TextSize = 11,
+            ZIndex = 103
+        })
+        Create("UICorner", {Parent = DelayInput, CornerRadius = UDim.new(0, 4)})
+        
+        Create("TextLabel", {
+            Parent = EntryFrame,
+            Text = "s",
+            Position = UDim2.new(0, 87, 0, 55),
+            Size = UDim2.new(0, 10, 0, 16),
+            Font = self.Font,
+            TextColor3 = self.Theme.TextDim,
+            TextSize = 10,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BackgroundTransparency = 1,
+            ZIndex = 103
+        })
+        
+        DelayInput.FocusLost:Connect(function()
+            local num = tonumber(DelayInput.Text)
+            if num and num >= 0 then
+                moveData.parryDelay = num
+            else
+                DelayInput.Text = tostring(moveData.parryDelay)
+            end
+        end)
+        
+        Create("TextLabel", {
+            Parent = EntryFrame,
+            Text = "Block:",
+            Position = UDim2.new(0, 105, 0, 55),
+            Size = UDim2.new(0, 40, 0, 16),
+            Font = self.Font,
+            TextColor3 = self.Theme.TextDim,
+            TextSize = 10,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BackgroundTransparency = 1,
+            ZIndex = 103
+        })
+        
+        local BlockInput = Create("TextBox", {
+            Parent = EntryFrame,
+            Size = UDim2.new(0, 40, 0, 18),
+            Position = UDim2.new(0, 145, 0, 54),
+            BackgroundColor3 = self.Theme.Element,
+            BorderSizePixel = 0,
+            Text = tostring(moveData.blockDuration),
+            Font = self.Font,
+            TextColor3 = self.Theme.Text,
+            TextSize = 11,
+            ZIndex = 103
+        })
+        Create("UICorner", {Parent = BlockInput, CornerRadius = UDim.new(0, 4)})
+        
+        Create("TextLabel", {
+            Parent = EntryFrame,
+            Text = "s",
+            Position = UDim2.new(0, 187, 0, 55),
+            Size = UDim2.new(0, 10, 0, 16),
+            Font = self.Font,
+            TextColor3 = self.Theme.TextDim,
+            TextSize = 10,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BackgroundTransparency = 1,
+            ZIndex = 103
+        })
+        
+        BlockInput.FocusLost:Connect(function()
+            local num = tonumber(BlockInput.Text)
+            if num and num > 0 then
+                moveData.blockDuration = num
+            else
+                BlockInput.Text = tostring(moveData.blockDuration)
+            end
+        end)
+        
+        -- Help text
+        Create("TextLabel", {
+            Parent = EntryFrame,
+            Text = "ID: " .. tostring(moveData.identifier):sub(1, 20) .. (tostring(moveData.identifier):len() > 20 and "..." or ""),
+            Position = UDim2.new(0, 210, 0, 55),
+            Size = UDim2.new(0, 150, 0, 16),
+            Font = self.Font,
+            TextColor3 = Color3.fromRGB(100, 100, 100),
+            TextSize = 9,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            BackgroundTransparency = 1,
+            ZIndex = 103
+        })
+        
+        return EntryFrame
+    end
+    
+    -- Create entries for all moves
+    for i, moveData in ipairs(movesData) do
+        createMoveEntry(moveData, i)
+    end
+    
+    -- Update canvas size
+    ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 10)
+    end)
+    ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 10)
+    
+    -- Save button
+    local SaveBtn = Create("TextButton", {
+        Parent = Popup,
+        Text = "Save & Close",
+        Position = UDim2.new(0, 10, 1, -45),
+        Size = UDim2.new(0.5, -15, 0, 35),
+        BackgroundColor3 = self.AccentColor,
+        Font = self.FontBold,
+        TextColor3 = self.Theme.Text,
+        TextSize = 14,
+        BorderSizePixel = 0,
+        AutoButtonColor = false,
+        ZIndex = 101
+    })
+    Create("UICorner", {Parent = SaveBtn, CornerRadius = UDim.new(0, 6)})
+    
+    SaveBtn.MouseEnter:Connect(function()
+        TweenService:Create(SaveBtn, TweenInfo.new(0.15), {
+            BackgroundColor3 = Color3.new(
+                math.min(1, self.AccentColor.R + 0.1),
+                math.min(1, self.AccentColor.G + 0.1),
+                math.min(1, self.AccentColor.B + 0.1)
+            )
+        }):Play()
+    end)
+    SaveBtn.MouseLeave:Connect(function()
+        TweenService:Create(SaveBtn, TweenInfo.new(0.15), {BackgroundColor3 = self.AccentColor}):Play()
+    end)
+    
+    SaveBtn.MouseButton1Click:Connect(function()
+        if onSave then
+            onSave(movesData)
+        end
+        self:Notify("Auto Parry", "Configuration saved!", 3, "check")
+        Popup:Destroy()
+        ActiveParryConfig = nil
+    end)
+    
+    -- Reset button
+    local ResetBtn = Create("TextButton", {
+        Parent = Popup,
+        Text = "Reset Defaults",
+        Position = UDim2.new(0.5, 5, 1, -45),
+        Size = UDim2.new(0.5, -15, 0, 35),
+        BackgroundColor3 = self.Theme.Element,
+        Font = self.FontBold,
+        TextColor3 = self.Theme.Text,
+        TextSize = 14,
+        BorderSizePixel = 0,
+        AutoButtonColor = false,
+        ZIndex = 101
+    })
+    Create("UICorner", {Parent = ResetBtn, CornerRadius = UDim.new(0, 6)})
+    Create("UIStroke", {Parent = ResetBtn, Color = self.Theme.Outline, Thickness = 1})
+    
+    ResetBtn.MouseEnter:Connect(function()
+        TweenService:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = self.Theme.Outline}):Play()
+    end)
+    ResetBtn.MouseLeave:Connect(function()
+        TweenService:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = self.Theme.Element}):Play()
+    end)
+    
+    ResetBtn.MouseButton1Click:Connect(function()
+        self:Notify("Auto Parry", "Reset to defaults (reload to apply)", 3, "info")
+    end)
+    
+    return Popup
+end
 
 return Library
