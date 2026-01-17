@@ -420,6 +420,7 @@ function Library:CreateWindow(Settings)
     
     local ScreenGui = Create("ScreenGui", { Name = "EvictedUI", IgnoreGuiInset = true, ResetOnSpawn = false })
     ProtectGui(ScreenGui)
+    Library.ScreenGui = ScreenGui
     
     -- Branding watermark
     if BrandingText then
