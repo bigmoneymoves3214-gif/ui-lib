@@ -2,14 +2,14 @@
     Custom UI Library V3 (Premium Clean)
     All features working + Icons for notifications
     
-    REFACTORED: All variables/functions stored in ENV table
+    REFACTORED: All variables/functions stored in _0xd5fe table
 ]]
 
 ---------------------------------------------------------------------
--- ENV TABLE SETUP (Central storage for all library state)
+-- _0xd5fe TABLE SETUP (Central storage for all library state)
 ---------------------------------------------------------------------
-local ENV = {}
-setmetatable(ENV, {
+local _0xd5fe = {}
+setmetatable(_0xd5fe, {
     __index = function(t, k)
         local v = rawget(t, k)
         if v ~= nil then return v end
@@ -20,14 +20,14 @@ setmetatable(ENV, {
     end
 })
 
--- Services stored in ENV
-ENV.InputService = game:GetService("UserInputService")
-ENV.TweenService = game:GetService("TweenService")
-ENV.CoreGui = game:GetService("CoreGui")
-ENV.Players = game:GetService("Players")
-ENV.HttpService = game:GetService("HttpService")
+-- Services stored in _0xd5fe
+_0xd5fe._0x8efd = game:GetService("UserInputService")
+_0xd5fe._0xa4bd = game:GetService("TweenService")
+_0xd5fe._0x7f0f = game:GetService("CoreGui")
+_0xd5fe._0x785d = game:GetService("Players")
+_0xd5fe._0x740e = game:GetService("HttpService")
 
-ENV.Library = {
+_0xd5fe._0x0e5f = {
     Open = true,
     ToggleKey = Enum.KeyCode.RightControl,
     AccentColor = Color3.fromRGB(96, 76, 255),
@@ -289,9 +289,9 @@ ENV.Library = {
     }
 }
 
-ENV.NotificationHolder = nil
+_0xd5fe._0xd4c2 = nil
 
-ENV.ProtectGui = function(gui)
+_0xd5fe._0x38c6 = function(gui)
     local success = false
     
     -- Try gethui first (most hidden)
@@ -310,7 +310,7 @@ ENV.ProtectGui = function(gui)
         if syn and syn.protect_gui then
             local _cloneref = cloneref or function(x) return x end
             syn.protect_gui(gui)
-            gui.Parent = _cloneref(ENV.CoreGui)
+            gui.Parent = _cloneref(_0xd5fe._0x7f0f)
             success = true
         end
     end)
@@ -320,7 +320,7 @@ ENV.ProtectGui = function(gui)
     -- Fallback to CoreGui with cloneref
     pcall(function()
         local _cloneref = cloneref or function(x) return x end
-        gui.Parent = _cloneref(ENV.CoreGui)
+        gui.Parent = _cloneref(_0xd5fe._0x7f0f)
         success = true
     end)
     
@@ -328,25 +328,25 @@ ENV.ProtectGui = function(gui)
     
     -- Last resort - direct CoreGui
     pcall(function()
-        gui.Parent = ENV.CoreGui
+        gui.Parent = _0xd5fe._0x7f0f
     end)
 end
 
-ENV.Create = function(class, properties)
+_0xd5fe._0x36b7 = function(class, properties)
     local instance = Instance.new(class)
     for k, v in pairs(properties) do instance[k] = v end
     return instance
 end
 
-ENV.AddShadow = function(parent, transparency)
-    local Shadow = ENV.Create("ImageLabel", {
+_0xd5fe._0xfb1b = function(parent, transparency)
+    local Shadow = _0xd5fe._0x36b7("ImageLabel", {
         Name = "Shadow",
         Parent = parent,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, -15, 0, -15),
         Size = UDim2.new(1, 30, 1, 30),
         Image = "rbxassetid://6014261993",
-        ImageColor3 = ENV.Library.Theme.Shadow,
+        ImageColor3 = _0xd5fe._0x0e5f.Theme.Shadow,
         ImageTransparency = transparency or 0.5,
         SliceCenter = Rect.new(49, 49, 450, 450),
         ScaleType = Enum.ScaleType.Slice,
@@ -355,7 +355,7 @@ ENV.AddShadow = function(parent, transparency)
     return Shadow
 end
 
-ENV.MakeDraggable = function(trigger, object)
+_0xd5fe._0x02b5 = function(trigger, object)
     local dragging, dragInput, dragStart, startPos
     trigger.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -368,58 +368,58 @@ ENV.MakeDraggable = function(trigger, object)
     trigger.InputChanged:Connect(function(input) 
         if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end 
     end)
-    ENV.InputService.InputChanged:Connect(function(input) 
+    _0xd5fe._0x8efd.InputChanged:Connect(function(input) 
         if input == dragInput and dragging then
             local delta = input.Position - dragStart
-            ENV.TweenService:Create(object, TweenInfo.new(0.05), {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)}):Play()
+            _0xd5fe._0xa4bd:Create(object, TweenInfo.new(0.05), {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)}):Play()
         end 
     end)
 end
 
 -- Notification System with Icons
-function ENV.Library:Notify(Title, Content, Duration, IconType)
-    if not ENV.NotificationHolder then return end
+function _0xd5fe._0x0e5f:Notify(Title, Content, Duration, IconType)
+    if not _0xd5fe._0xd4c2 then return end
     Duration = Duration or 3
     IconType = IconType or "info"
     
-    local Notif = ENV.Create("Frame", {
-        Parent = ENV.NotificationHolder,
-        BackgroundColor3 = ENV.Library.Theme.Section,
+    local Notif = _0xd5fe._0x36b7("Frame", {
+        Parent = _0xd5fe._0xd4c2,
+        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Section,
         Size = UDim2.new(1, -10, 0, 0),
         BorderSizePixel = 0,
         ClipsDescendants = true
     })
-    ENV.Create("UICorner", {Parent = Notif, CornerRadius = UDim.new(0, 6)})
-    ENV.Create("UIStroke", {Parent = Notif, Color = ENV.Library.Theme.Outline, Thickness = 1})
+    _0xd5fe._0x36b7("UICorner", {Parent = Notif, CornerRadius = UDim.new(0, 6)})
+    _0xd5fe._0x36b7("UIStroke", {Parent = Notif, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
     
-    local Icon = ENV.Create("ImageLabel", {
+    local Icon = _0xd5fe._0x36b7("ImageLabel", {
         Parent = Notif,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 10, 0, 10),
         Size = UDim2.new(0, 30, 0, 30),
-        Image = ENV.Library.Icons[IconType] or ENV.Library.Icons.info,
-        ImageColor3 = ENV.Library.AccentColor
+        Image = _0xd5fe._0x0e5f.Icons[IconType] or _0xd5fe._0x0e5f.Icons.info,
+        ImageColor3 = _0xd5fe._0x0e5f.AccentColor
     })
     
-    local TitleLbl = ENV.Create("TextLabel", {
+    local TitleLbl = _0xd5fe._0x36b7("TextLabel", {
         Parent = Notif, 
         Text = Title, 
         Position = UDim2.new(0, 48, 0, 8), 
         Size = UDim2.new(1, -56, 0, 16), 
-        Font = ENV.Library.FontBold, 
-        TextColor3 = ENV.Library.Theme.Text, 
+        Font = _0xd5fe._0x0e5f.FontBold, 
+        TextColor3 = _0xd5fe._0x0e5f.Theme.Text, 
         TextSize = 13, 
         TextXAlignment = Enum.TextXAlignment.Left, 
         BackgroundTransparency = 1
     })
     
-    local ContentLbl = ENV.Create("TextLabel", {
+    local ContentLbl = _0xd5fe._0x36b7("TextLabel", {
         Parent = Notif, 
         Text = Content, 
         Position = UDim2.new(0, 48, 0, 26), 
         Size = UDim2.new(1, -56, 0, 1000), 
-        Font = ENV.Library.Font, 
-        TextColor3 = ENV.Library.Theme.TextDim, 
+        Font = _0xd5fe._0x0e5f.Font, 
+        TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, 
         TextSize = 12, 
         TextXAlignment = Enum.TextXAlignment.Left, 
         TextYAlignment = Enum.TextYAlignment.Top,
@@ -427,20 +427,20 @@ function ENV.Library:Notify(Title, Content, Duration, IconType)
         TextWrapped = true
     })
     
-    local Bar = ENV.Create("Frame", {
+    local Bar = _0xd5fe._0x36b7("Frame", {
         Parent = Notif, 
-        BackgroundColor3 = ENV.Library.AccentColor, 
+        BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor, 
         Position = UDim2.new(0, 0, 0, 0), 
         Size = UDim2.new(0, 3, 1, 0), 
         BorderSizePixel = 0
     })
-    ENV.Create("UICorner", {Parent = Bar, CornerRadius = UDim.new(0, 6)})
+    _0xd5fe._0x36b7("UICorner", {Parent = Bar, CornerRadius = UDim.new(0, 6)})
     
     -- Calculate height based on content text
     local textBounds = game:GetService("TextService"):GetTextSize(
         Content, 
         12, 
-        ENV.Library.Font, 
+        _0xd5fe._0x0e5f.Font, 
         Vector2.new(290 - 56, 1000)
     )
     local contentHeight = math.max(textBounds.Y, 14)
@@ -448,23 +448,23 @@ function ENV.Library:Notify(Title, Content, Duration, IconType)
     
     ContentLbl.Size = UDim2.new(1, -56, 0, contentHeight)
     
-    ENV.TweenService:Create(Notif, TweenInfo.new(0.3), {Size = UDim2.new(1, -10, 0, notifHeight)}):Play()
+    _0xd5fe._0xa4bd:Create(Notif, TweenInfo.new(0.3), {Size = UDim2.new(1, -10, 0, notifHeight)}):Play()
     task.delay(Duration, function()
-        ENV.TweenService:Create(Notif, TweenInfo.new(0.3), {Size = UDim2.new(1, -10, 0, 0)}):Play()
+        _0xd5fe._0xa4bd:Create(Notif, TweenInfo.new(0.3), {Size = UDim2.new(1, -10, 0, 0)}):Play()
         task.wait(0.3)
         Notif:Destroy()
     end)
 end
 
-function ENV.Library:CreateWindow(Settings)
+function _0xd5fe._0x0e5f:CreateWindow(Settings)
     local Title = Settings.Title or "UI"
     local Logo = Settings.Logo
     local Acrylic = Settings.Acrylic or false
     local BrandingText = Settings.BrandingText
     local BrandingPosition = Settings.BrandingPosition or "bottom-left" -- "bottom-left", "top-left", "top-right"
     
-    local ScreenGui = ENV.Create("ScreenGui", { Name = ENV.HttpService:GenerateGUID(false), IgnoreGuiInset = true, ResetOnSpawn = false })
-    ENV.ProtectGui(ScreenGui)
+    local ScreenGui = _0xd5fe._0x36b7("ScreenGui", { Name = _0xd5fe._0x740e:GenerateGUID(false), IgnoreGuiInset = true, ResetOnSpawn = false })
+    _0xd5fe._0x38c6(ScreenGui)
     
     -- Branding watermark
     if BrandingText then
@@ -479,7 +479,7 @@ function ENV.Library:CreateWindow(Settings)
             brandPos = UDim2.new(0, 10, 1, -30)
         end
         
-        local BrandingLabel = ENV.Create("TextLabel", {
+        local BrandingLabel = _0xd5fe._0x36b7("TextLabel", {
             Parent = ScreenGui,
             Name = "Branding",
             BackgroundTransparency = 1,
@@ -487,8 +487,8 @@ function ENV.Library:CreateWindow(Settings)
             AnchorPoint = brandAnchor,
             Size = UDim2.new(0, 300, 0, 20),
             Text = BrandingText,
-            Font = ENV.Library.FontBold,
-            TextColor3 = ENV.Library.AccentColor,
+            Font = _0xd5fe._0x0e5f.FontBold,
+            TextColor3 = _0xd5fe._0x0e5f.AccentColor,
             TextSize = 14,
             TextXAlignment = BrandingPosition == "top-right" and Enum.TextXAlignment.Right or Enum.TextXAlignment.Left,
             TextStrokeTransparency = 0.8,
@@ -497,23 +497,23 @@ function ENV.Library:CreateWindow(Settings)
         })
         
         -- Store reference for potential updates
-        ENV.Library.BrandingLabel = BrandingLabel
+        _0xd5fe._0x0e5f.BrandingLabel = BrandingLabel
     end
     
     -- Loading Screen (same size as menu)
-    local LoadingScreen = ENV.Create("Frame", {
+    local LoadingScreen = _0xd5fe._0x36b7("Frame", {
         Parent = ScreenGui,
-        BackgroundColor3 = ENV.Library.Theme.Background,
+        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Background,
         Position = UDim2.new(0.5, -375, 0.5, -275),
         Size = UDim2.new(0, 750, 0, 550),
         ZIndex = 1000,
         BorderSizePixel = 0
     })
-    ENV.Create("UICorner", {Parent = LoadingScreen, CornerRadius = UDim.new(0, 8)})
-    ENV.Create("UIStroke", {Parent = LoadingScreen, Color = ENV.Library.Theme.Outline, Thickness = 1})
-    ENV.AddShadow(LoadingScreen, 0.2)
+    _0xd5fe._0x36b7("UICorner", {Parent = LoadingScreen, CornerRadius = UDim.new(0, 8)})
+    _0xd5fe._0x36b7("UIStroke", {Parent = LoadingScreen, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+    _0xd5fe._0xfb1b(LoadingScreen, 0.2)
     
-    local LoadingLogo = ENV.Create("ImageLabel", {
+    local LoadingLogo = _0xd5fe._0x36b7("ImageLabel", {
         Parent = LoadingScreen,
         BackgroundTransparency = 1,
         Position = UDim2.new(0.5, 0, 0.4, 0),
@@ -524,47 +524,47 @@ function ENV.Library:CreateWindow(Settings)
         ScaleType = Enum.ScaleType.Fit
     })
     
-    local LoadingBarOuter = ENV.Create("Frame", {
+    local LoadingBarOuter = _0xd5fe._0x36b7("Frame", {
         Parent = LoadingScreen,
-        BackgroundColor3 = ENV.Library.Theme.Element,
+        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element,
         Position = UDim2.new(0.5, 0, 0.7, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
         Size = UDim2.new(0, 300, 0, 24),
         ZIndex = 1001,
         BorderSizePixel = 0
     })
-    ENV.Create("UICorner", {Parent = LoadingBarOuter, CornerRadius = UDim.new(1, 0)})
-    ENV.Create("UIStroke", {Parent = LoadingBarOuter, Color = ENV.Library.AccentColor, Thickness = 2})
+    _0xd5fe._0x36b7("UICorner", {Parent = LoadingBarOuter, CornerRadius = UDim.new(1, 0)})
+    _0xd5fe._0x36b7("UIStroke", {Parent = LoadingBarOuter, Color = _0xd5fe._0x0e5f.AccentColor, Thickness = 2})
     
-    local LoadingBarBg = ENV.Create("Frame", {
+    local LoadingBarBg = _0xd5fe._0x36b7("Frame", {
         Parent = LoadingBarOuter,
-        BackgroundColor3 = ENV.Library.Theme.Section,
+        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Section,
         Position = UDim2.new(0, 4, 0.5, 0),
         AnchorPoint = Vector2.new(0, 0.5),
         Size = UDim2.new(1, -8, 0, 14),
         ZIndex = 1002,
         BorderSizePixel = 0
     })
-    ENV.Create("UICorner", {Parent = LoadingBarBg, CornerRadius = UDim.new(1, 0)})
+    _0xd5fe._0x36b7("UICorner", {Parent = LoadingBarBg, CornerRadius = UDim.new(1, 0)})
     
-    local LoadingBar = ENV.Create("Frame", {
+    local LoadingBar = _0xd5fe._0x36b7("Frame", {
         Parent = LoadingBarBg,
-        BackgroundColor3 = ENV.Library.AccentColor,
+        BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor,
         Size = UDim2.new(0, 0, 1, 0),
         ZIndex = 1003,
         BorderSizePixel = 0
     })
-    ENV.Create("UICorner", {Parent = LoadingBar, CornerRadius = UDim.new(1, 0)})
+    _0xd5fe._0x36b7("UICorner", {Parent = LoadingBar, CornerRadius = UDim.new(1, 0)})
     
-    local LoadingText = ENV.Create("TextLabel", {
+    local LoadingText = _0xd5fe._0x36b7("TextLabel", {
         Parent = LoadingScreen,
         BackgroundTransparency = 1,
         Position = UDim2.new(0.5, 0, 0.78, 0),
         AnchorPoint = Vector2.new(0.5, 0),
         Size = UDim2.new(0, 300, 0, 20),
         Text = "Loading...",
-        Font = ENV.Library.Font,
-        TextColor3 = ENV.Library.Theme.TextDim,
+        Font = _0xd5fe._0x0e5f.Font,
+        TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim,
         TextSize = 14,
         ZIndex = 1001
     })
@@ -575,43 +575,43 @@ function ENV.Library:CreateWindow(Settings)
         if MainFrame then
             MainFrame.Visible = true
         end
-        ENV.TweenService:Create(LoadingScreen, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-        ENV.TweenService:Create(LoadingLogo, TweenInfo.new(0.5), {ImageTransparency = 1}):Play()
-        ENV.TweenService:Create(LoadingBarOuter, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-        ENV.TweenService:Create(LoadingBarBg, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-        ENV.TweenService:Create(LoadingBar, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-        ENV.TweenService:Create(LoadingText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
+        _0xd5fe._0xa4bd:Create(LoadingScreen, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+        _0xd5fe._0xa4bd:Create(LoadingLogo, TweenInfo.new(0.5), {ImageTransparency = 1}):Play()
+        _0xd5fe._0xa4bd:Create(LoadingBarOuter, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+        _0xd5fe._0xa4bd:Create(LoadingBarBg, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+        _0xd5fe._0xa4bd:Create(LoadingBar, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+        _0xd5fe._0xa4bd:Create(LoadingText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
         task.wait(0.5)
         LoadingScreen:Destroy()
     end
     
     -- Animate loading (5-8 seconds random)
     local loadDuration = math.random(50, 80) / 10
-    ENV.TweenService:Create(LoadingBar, TweenInfo.new(loadDuration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+    _0xd5fe._0xa4bd:Create(LoadingBar, TweenInfo.new(loadDuration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)}):Play()
     task.delay(loadDuration, ShowMainAfterLoad)
     
     -- Notification Holder
-    ENV.NotificationHolder = ENV.Create("Frame", {
+    _0xd5fe._0xd4c2 = _0xd5fe._0x36b7("Frame", {
         Parent = ScreenGui,
         BackgroundTransparency = 1,
         Position = UDim2.new(1, -310, 1, -310),
         Size = UDim2.new(0, 300, 0, 300)
     })
-    ENV.Create("UIListLayout", {Parent = ENV.NotificationHolder, Padding = UDim.new(0, 5), VerticalAlignment = Enum.VerticalAlignment.Bottom})
+    _0xd5fe._0x36b7("UIListLayout", {Parent = _0xd5fe._0xd4c2, Padding = UDim.new(0, 5), VerticalAlignment = Enum.VerticalAlignment.Bottom})
 
     -- Custom Cursor
-    local CustomCursor = ENV.Create("ImageLabel", {
+    local CustomCursor = _0xd5fe._0x36b7("ImageLabel", {
         Parent = ScreenGui,
         Name = "CustomCursor",
         BackgroundTransparency = 1,
         Size = UDim2.new(0, 20, 0, 20),
         Image = "rbxassetid://102366537072878",
-        ImageColor3 = ENV.Library.Theme.Text,
+        ImageColor3 = _0xd5fe._0x0e5f.Theme.Text,
         ZIndex = 9999,
         Visible = true
     })
     
-    local CursorShadow = ENV.Create("ImageLabel", {
+    local CursorShadow = _0xd5fe._0x36b7("ImageLabel", {
         Parent = CustomCursor,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 2, 0, 2),
@@ -622,35 +622,35 @@ function ENV.Library:CreateWindow(Settings)
         ZIndex = 9998
     })
     
-    local CursorDot = ENV.Create("Frame", {
+    local CursorDot = _0xd5fe._0x36b7("Frame", {
         Parent = ScreenGui,
         Name = "CursorDot",
-        BackgroundColor3 = ENV.Library.AccentColor,
+        BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor,
         Size = UDim2.new(0, 6, 0, 6),
         ZIndex = 9999,
         Visible = true,
         BorderSizePixel = 0
     })
-    ENV.Create("UICorner", {Parent = CursorDot, CornerRadius = UDim.new(1, 0)})
+    _0xd5fe._0x36b7("UICorner", {Parent = CursorDot, CornerRadius = UDim.new(1, 0)})
     
-    ENV.InputService.MouseIconEnabled = false
+    _0xd5fe._0x8efd.MouseIconEnabled = false
     
     local cursorConn = game:GetService("RunService").RenderStepped:Connect(function()
-        local mousePos = ENV.InputService:GetMouseLocation()
+        local mousePos = _0xd5fe._0x8efd:GetMouseLocation()
         CustomCursor.Position = UDim2.new(0, mousePos.X, 0, mousePos.Y)
         CursorDot.Position = UDim2.new(0, mousePos.X - 3, 0, mousePos.Y - 3)
     end)
     
     -- Store cursor connection for cleanup
-    ENV.Library.CursorConnection = cursorConn
-    ENV.Library.CustomCursor = CustomCursor
-    ENV.Library.CursorDot = CursorDot
+    _0xd5fe._0x0e5f.CursorConnection = cursorConn
+    _0xd5fe._0x0e5f.CustomCursor = CustomCursor
+    _0xd5fe._0x0e5f.CursorDot = CursorDot
 
     -- Main Window (hidden until loading completes)
-    local Main = ENV.Create("Frame", {
+    local Main = _0xd5fe._0x36b7("Frame", {
         Name = "Main",
         Parent = ScreenGui,
-        BackgroundColor3 = ENV.Library.Theme.Background,
+        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Background,
         BackgroundTransparency = Acrylic and 0.3 or 0,
         Position = UDim2.new(0.5, -375, 0.5, -275),
         Size = UDim2.new(0, 750, 0, 550),
@@ -659,18 +659,18 @@ function ENV.Library:CreateWindow(Settings)
         Visible = false
     })
     MainFrame = Main
-    ENV.Create("UICorner", {Parent = Main, CornerRadius = UDim.new(0, 8)})
-    ENV.AddShadow(Main, 0.2)
-    ENV.Create("UIStroke", {Parent = Main, Color = ENV.Library.Theme.Outline, Thickness = 1})
+    _0xd5fe._0x36b7("UICorner", {Parent = Main, CornerRadius = UDim.new(0, 8)})
+    _0xd5fe._0xfb1b(Main, 0.2)
+    _0xd5fe._0x36b7("UIStroke", {Parent = Main, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
 
     -- Store reference for acrylic toggle
-    ENV.Library.MainFrame = Main
-    ENV.Library.Acrylic = Acrylic
+    _0xd5fe._0x0e5f.MainFrame = Main
+    _0xd5fe._0x0e5f.Acrylic = Acrylic
     
-    function ENV.Library:SetAcrylic(enabled)
-        ENV.Library.Acrylic = enabled
+    function _0xd5fe._0x0e5f:SetAcrylic(enabled)
+        _0xd5fe._0x0e5f.Acrylic = enabled
         local targetTransparency = enabled and 0.3 or 0
-        ENV.TweenService:Create(ENV.Library.MainFrame, TweenInfo.new(0.3), {BackgroundTransparency = targetTransparency}):Play()
+        _0xd5fe._0xa4bd:Create(_0xd5fe._0x0e5f.MainFrame, TweenInfo.new(0.3), {BackgroundTransparency = targetTransparency}):Play()
     end
 
     -- Resize handles
@@ -679,7 +679,7 @@ function ENV.Library:CreateWindow(Settings)
     local HANDLE_SIZE = 8
     
     local function CreateResizeHandle(name, position, size, cursor)
-        local handle = ENV.Create("Frame", {
+        local handle = _0xd5fe._0x36b7("Frame", {
             Name = name,
             Parent = Main,
             BackgroundTransparency = 1,
@@ -696,15 +696,15 @@ function ENV.Library:CreateWindow(Settings)
         UDim2.new(0, HANDLE_SIZE, 0, HANDLE_SIZE))
     
     -- Visual indicator for resize corner
-    local ResizeIcon = ENV.Create("Frame", {
+    local ResizeIcon = _0xd5fe._0x36b7("Frame", {
         Parent = ResizeBR,
-        BackgroundColor3 = ENV.Library.Theme.TextDim,
+        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.TextDim,
         BackgroundTransparency = 0.5,
         Position = UDim2.new(0.5, -2, 0.5, -2),
         Size = UDim2.new(0, 4, 0, 4),
         ZIndex = 11
     })
-    ENV.Create("UICorner", {Parent = ResizeIcon, CornerRadius = UDim.new(1, 0)})
+    _0xd5fe._0x36b7("UICorner", {Parent = ResizeIcon, CornerRadius = UDim.new(1, 0)})
     
     -- Bottom edge
     local ResizeB = CreateResizeHandle("ResizeB",
@@ -735,11 +735,11 @@ function ENV.Library:CreateWindow(Settings)
         end)
         
         handle.MouseEnter:Connect(function()
-            ENV.TweenService:Create(ResizeIcon, TweenInfo.new(0.15), {BackgroundTransparency = 0, BackgroundColor3 = ENV.Library.AccentColor}):Play()
+            _0xd5fe._0xa4bd:Create(ResizeIcon, TweenInfo.new(0.15), {BackgroundTransparency = 0, BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play()
         end)
         handle.MouseLeave:Connect(function()
             if not resizing then
-                ENV.TweenService:Create(ResizeIcon, TweenInfo.new(0.15), {BackgroundTransparency = 0.5, BackgroundColor3 = ENV.Library.Theme.TextDim}):Play()
+                _0xd5fe._0xa4bd:Create(ResizeIcon, TweenInfo.new(0.15), {BackgroundTransparency = 0.5, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
             end
         end)
     end
@@ -748,7 +748,7 @@ function ENV.Library:CreateWindow(Settings)
     StartResize(ResizeB, "B")
     StartResize(ResizeR, "R")
     
-    ENV.InputService.InputChanged:Connect(function(input)
+    _0xd5fe._0x8efd.InputChanged:Connect(function(input)
         if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = Vector2.new(input.Position.X, input.Position.Y) - resizeStart
             local newWidth = startSize.X
@@ -765,27 +765,27 @@ function ENV.Library:CreateWindow(Settings)
         end
     end)
     
-    ENV.InputService.InputEnded:Connect(function(input)
+    _0xd5fe._0x8efd.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 and resizing then
             resizing = false
             resizeType = nil
-            ENV.TweenService:Create(ResizeIcon, TweenInfo.new(0.15), {BackgroundTransparency = 0.5, BackgroundColor3 = ENV.Library.Theme.TextDim}):Play()
+            _0xd5fe._0xa4bd:Create(ResizeIcon, TweenInfo.new(0.15), {BackgroundTransparency = 0.5, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
         end
     end)
 
     -- Topbar
-    local Topbar = ENV.Create("Frame", {
+    local Topbar = _0xd5fe._0x36b7("Frame", {
         Name = "Topbar",
         Parent = Main,
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 0, 45)
     })
-    ENV.MakeDraggable(Topbar, Main)
+    _0xd5fe._0x02b5(Topbar, Main)
     
     local hasLogo = Logo and Logo ~= ""
     
     if hasLogo then
-        local LogoImg = ENV.Create("ImageLabel", {
+        local LogoImg = _0xd5fe._0x36b7("ImageLabel", {
             Parent = Topbar,
             BackgroundTransparency = 1,
             Position = UDim2.new(0, 15, 0.5, -15),
@@ -796,44 +796,44 @@ function ENV.Library:CreateWindow(Settings)
         })
     end
 
-    local TopTitle = ENV.Create("TextLabel", {
+    local TopTitle = _0xd5fe._0x36b7("TextLabel", {
         Parent = Topbar,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, hasLogo and 55 or 20, 0, 0),
         Size = UDim2.new(1, hasLogo and -100 or -65, 1, 0),
-        Font = ENV.Library.FontBold,
+        Font = _0xd5fe._0x0e5f.FontBold,
         Text = Title,
-        TextColor3 = ENV.Library.Theme.Text,
+        TextColor3 = _0xd5fe._0x0e5f.Theme.Text,
         TextSize = 19,
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 2
     })
     
-    local MinBtn = ENV.Create("TextButton", {
+    local MinBtn = _0xd5fe._0x36b7("TextButton", {
         Parent = Topbar,
         BackgroundTransparency = 1,
         Position = UDim2.new(1, -45, 0, 0),
         Size = UDim2.new(0, 45, 1, 0),
         Text = "−",
-        Font = ENV.Library.FontBold,
-        TextColor3 = ENV.Library.Theme.TextDim,
+        Font = _0xd5fe._0x0e5f.FontBold,
+        TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim,
         TextSize = 26,
         AutoButtonColor = false,
         ZIndex = 2
     })
     
-    MinBtn.MouseEnter:Connect(function() ENV.TweenService:Create(MinBtn, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.Text}):Play() end)
-    MinBtn.MouseLeave:Connect(function() ENV.TweenService:Create(MinBtn, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.TextDim}):Play() end)
+    MinBtn.MouseEnter:Connect(function() _0xd5fe._0xa4bd:Create(MinBtn, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play() end)
+    MinBtn.MouseLeave:Connect(function() _0xd5fe._0xa4bd:Create(MinBtn, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play() end)
     
     local Minimized = false
     MinBtn.MouseButton1Click:Connect(function()
         Minimized = not Minimized
         Main.ClipsDescendants = true
         if Minimized then
-            ENV.TweenService:Create(Main, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 750, 0, 45)}):Play()
+            _0xd5fe._0xa4bd:Create(Main, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 750, 0, 45)}):Play()
             MinBtn.Text = "+"
         else
-            ENV.TweenService:Create(Main, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 750, 0, 550)}):Play()
+            _0xd5fe._0xa4bd:Create(Main, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 750, 0, 550)}):Play()
             MinBtn.Text = "−"
             task.wait(0.3)
             Main.ClipsDescendants = false
@@ -841,19 +841,19 @@ function ENV.Library:CreateWindow(Settings)
     end)
 
     -- Sidebar
-    local Sidebar = ENV.Create("Frame", {
+    local Sidebar = _0xd5fe._0x36b7("Frame", {
         Name = "Sidebar",
         Parent = Main,
-        BackgroundColor3 = ENV.Library.Theme.Sidebar,
+        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Sidebar,
         BackgroundTransparency = Acrylic and 0.3 or 0,
         Position = UDim2.new(0, 0, 0, 45),
         Size = UDim2.new(0, 200, 1, -45),
         BorderSizePixel = 0
     })
-    ENV.Create("UICorner", {Parent = Sidebar, CornerRadius = UDim.new(0, 8)})
-    ENV.Create("Frame", {Parent = Sidebar, BackgroundColor3 = ENV.Library.Theme.Sidebar, BackgroundTransparency = Acrylic and 0.3 or 0, Size = UDim2.new(1,0,0,10), Position = UDim2.new(0,0,0,0), BorderSizePixel = 0})
+    _0xd5fe._0x36b7("UICorner", {Parent = Sidebar, CornerRadius = UDim.new(0, 8)})
+    _0xd5fe._0x36b7("Frame", {Parent = Sidebar, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Sidebar, BackgroundTransparency = Acrylic and 0.3 or 0, Size = UDim2.new(1,0,0,10), Position = UDim2.new(0,0,0,0), BorderSizePixel = 0})
 
-    local TabContainer = ENV.Create("ScrollingFrame", {
+    local TabContainer = _0xd5fe._0x36b7("ScrollingFrame", {
         Parent = Sidebar,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 10, 0, 10),
@@ -861,9 +861,9 @@ function ENV.Library:CreateWindow(Settings)
         ScrollBarThickness = 0,
         BorderSizePixel = 0
     })
-    ENV.Create("UIListLayout", {Parent = TabContainer, Padding = UDim.new(0, 6)})
+    _0xd5fe._0x36b7("UIListLayout", {Parent = TabContainer, Padding = UDim.new(0, 6)})
 
-    local Content = ENV.Create("Frame", {
+    local Content = _0xd5fe._0x36b7("Frame", {
         Name = "Content",
         Parent = Main,
         BackgroundTransparency = 1,
@@ -871,117 +871,117 @@ function ENV.Library:CreateWindow(Settings)
         Size = UDim2.new(1, -225, 1, -65)
     })
 
-    ENV.InputService.InputBegan:Connect(function(input)
-        if input.KeyCode == ENV.Library.ToggleKey then 
-            ENV.Library.Open = not ENV.Library.Open 
-            Main.Visible = ENV.Library.Open 
-            CustomCursor.Visible = ENV.Library.Open
-            CursorDot.Visible = ENV.Library.Open
-            ENV.InputService.MouseIconEnabled = not ENV.Library.Open
+    _0xd5fe._0x8efd.InputBegan:Connect(function(input)
+        if input.KeyCode == _0xd5fe._0x0e5f.ToggleKey then 
+            _0xd5fe._0x0e5f.Open = not _0xd5fe._0x0e5f.Open 
+            Main.Visible = _0xd5fe._0x0e5f.Open 
+            CustomCursor.Visible = _0xd5fe._0x0e5f.Open
+            CursorDot.Visible = _0xd5fe._0x0e5f.Open
+            _0xd5fe._0x8efd.MouseIconEnabled = not _0xd5fe._0x0e5f.Open
         end
     end)
 
     local WindowObj = {}
     
     function WindowObj:AddTab(Name, IconId)
-        local TabBtn = ENV.Create("TextButton", {
+        local TabBtn = _0xd5fe._0x36b7("TextButton", {
             Parent = TabContainer,
-            BackgroundColor3 = ENV.Library.Theme.Background,
+            BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Background,
             Size = UDim2.new(1, 0, 0, 36),
             AutoButtonColor = false,
             Text = "",
             BackgroundTransparency = 1
         })
-        ENV.Create("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 6)})
+        _0xd5fe._0x36b7("UICorner", {Parent = TabBtn, CornerRadius = UDim.new(0, 6)})
         
         -- Purple indicator bar on left
-        local TabIndicator = ENV.Create("Frame", {
+        local TabIndicator = _0xd5fe._0x36b7("Frame", {
             Parent = TabBtn,
-            BackgroundColor3 = ENV.Library.AccentColor,
+            BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor,
             Size = UDim2.new(0, 3, 0, 18),
             Position = UDim2.new(0, 0, 0.5, -9),
             BackgroundTransparency = 1,
             BorderSizePixel = 0
         })
-        ENV.Create("UICorner", {Parent = TabIndicator, CornerRadius = UDim.new(0, 2)})
+        _0xd5fe._0x36b7("UICorner", {Parent = TabIndicator, CornerRadius = UDim.new(0, 2)})
         
         -- Tab Icon
         local TabIcon = nil
         if IconId then
-            TabIcon = ENV.Create("ImageLabel", {
+            TabIcon = _0xd5fe._0x36b7("ImageLabel", {
                 Parent = TabBtn,
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 12, 0.5, -9),
                 Size = UDim2.new(0, 18, 0, 18),
                 Image = IconId,
-                ImageColor3 = ENV.Library.Theme.TextDim
+                ImageColor3 = _0xd5fe._0x0e5f.Theme.TextDim
             })
         end
         
-        local TitleLbl = ENV.Create("TextLabel", {
+        local TitleLbl = _0xd5fe._0x36b7("TextLabel", {
             Parent = TabBtn,
             BackgroundTransparency = 1,
             Position = UDim2.new(0, IconId and 38 or 14, 0, 0),
             Size = UDim2.new(1, IconId and -38 or -14, 1, 0),
             Text = Name,
-            Font = ENV.Library.Font,
-            TextColor3 = ENV.Library.Theme.TextDim,
+            Font = _0xd5fe._0x0e5f.Font,
+            TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim,
             TextSize = 14,
             TextXAlignment = Enum.TextXAlignment.Left
         })
         
-        local TabPage = ENV.Create("Frame", {
+        local TabPage = _0xd5fe._0x36b7("Frame", {
             Parent = Content,
             BackgroundTransparency = 1,
             Size = UDim2.new(1, 0, 1, 0),
             Visible = false
         })
         
-        local SubTopBar = ENV.Create("Frame", {
+        local SubTopBar = _0xd5fe._0x36b7("Frame", {
             Parent = TabPage,
             BackgroundTransparency = 1,
             Size = UDim2.new(1, 0, 0, 35),
             Visible = false
         })
-        ENV.Create("UIListLayout", {
+        _0xd5fe._0x36b7("UIListLayout", {
             Parent = SubTopBar, 
             FillDirection = Enum.FillDirection.Horizontal, 
             Padding = UDim.new(0, 20),
             HorizontalAlignment = Enum.HorizontalAlignment.Left
         })
         
-        local DefaultContainer = ENV.Create("ScrollingFrame", {
+        local DefaultContainer = _0xd5fe._0x36b7("ScrollingFrame", {
             Parent = TabPage,
             BackgroundTransparency = 1,
             Size = UDim2.new(1,0,1,0),
             ScrollBarThickness = 3,
-            ScrollBarImageColor3 = ENV.Library.Theme.Outline,
+            ScrollBarImageColor3 = _0xd5fe._0x0e5f.Theme.Outline,
             CanvasSize = UDim2.new(0,0,0,0),
             BorderSizePixel = 0
         })
-        local Left = ENV.Create("Frame", {Parent = DefaultContainer, BackgroundTransparency = 1, Size = UDim2.new(0.5, -8, 1, 0)})
-        local Right = ENV.Create("Frame", {Parent = DefaultContainer, BackgroundTransparency = 1, Size = UDim2.new(0.5, -8, 1, 0), Position = UDim2.new(0.5, 8, 0, 0)})
-        ENV.Create("UIListLayout", {Parent = Left, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder})
-        ENV.Create("UIListLayout", {Parent = Right, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder})
+        local Left = _0xd5fe._0x36b7("Frame", {Parent = DefaultContainer, BackgroundTransparency = 1, Size = UDim2.new(0.5, -8, 1, 0)})
+        local Right = _0xd5fe._0x36b7("Frame", {Parent = DefaultContainer, BackgroundTransparency = 1, Size = UDim2.new(0.5, -8, 1, 0), Position = UDim2.new(0.5, 8, 0, 0)})
+        _0xd5fe._0x36b7("UIListLayout", {Parent = Left, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder})
+        _0xd5fe._0x36b7("UIListLayout", {Parent = Right, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder})
         
         local function Activate()
             for _, v in pairs(TabContainer:GetChildren()) do
                 if v:IsA("TextButton") then 
-                     ENV.TweenService:Create(v, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+                     _0xd5fe._0xa4bd:Create(v, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
                      local titleLabel = v:FindFirstChild("TextLabel")
                      if titleLabel then 
-                         ENV.TweenService:Create(titleLabel, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.TextDim, TextSize = 14}):Play()
+                         _0xd5fe._0xa4bd:Create(titleLabel, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, TextSize = 14}):Play()
                      end
                      local indicator = v:FindFirstChild("Frame")
-                     if indicator then ENV.TweenService:Create(indicator, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play() end
+                     if indicator then _0xd5fe._0xa4bd:Create(indicator, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play() end
                      local icon = v:FindFirstChild("ImageLabel")
-                     if icon then ENV.TweenService:Create(icon, TweenInfo.new(0.2), {ImageColor3 = ENV.Library.Theme.TextDim}):Play() end
+                     if icon then _0xd5fe._0xa4bd:Create(icon, TweenInfo.new(0.2), {ImageColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play() end
                 end
             end
-            ENV.TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.95}):Play()
-            ENV.TweenService:Create(TitleLbl, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.Text, TextSize = 15}):Play()
-            ENV.TweenService:Create(TabIndicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
-            if TabIcon then ENV.TweenService:Create(TabIcon, TweenInfo.new(0.2), {ImageColor3 = ENV.Library.AccentColor}):Play() end
+            _0xd5fe._0xa4bd:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.95}):Play()
+            _0xd5fe._0xa4bd:Create(TitleLbl, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 15}):Play()
+            _0xd5fe._0xa4bd:Create(TabIndicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+            if TabIcon then _0xd5fe._0xa4bd:Create(TabIcon, TweenInfo.new(0.2), {ImageColor3 = _0xd5fe._0x0e5f.AccentColor}):Play() end
             
             for _, v in pairs(Content:GetChildren()) do v.Visible = false end
             TabPage.Visible = true
@@ -999,55 +999,55 @@ function ENV.Library:CreateWindow(Settings)
                 DefaultContainer.Visible = false
             end
             
-            local SubBtn = ENV.Create("TextButton", {
+            local SubBtn = _0xd5fe._0x36b7("TextButton", {
                 Parent = SubTopBar,
                 BackgroundTransparency = 1,
                 Text = SubName,
-                Font = ENV.Library.FontBold,
-                TextColor3 = ENV.Library.Theme.TextDim,
+                Font = _0xd5fe._0x0e5f.FontBold,
+                TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim,
                 TextSize = 15,
                 AutomaticSize = Enum.AutomaticSize.X,
                 Size = UDim2.new(0,0,1,0),
                 AutoButtonColor = false
             })
             
-            local Indicator = ENV.Create("Frame", {
+            local Indicator = _0xd5fe._0x36b7("Frame", {
                 Parent = SubBtn,
-                BackgroundColor3 = ENV.Library.AccentColor,
+                BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor,
                 Position = UDim2.new(0,0,1,-3),
                 Size = UDim2.new(1,0,0,3),
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0
             })
-            ENV.Create("UICorner", {Parent = Indicator, CornerRadius = UDim.new(1,0)})
+            _0xd5fe._0x36b7("UICorner", {Parent = Indicator, CornerRadius = UDim.new(1,0)})
             
-            local SubContent = ENV.Create("ScrollingFrame", {
+            local SubContent = _0xd5fe._0x36b7("ScrollingFrame", {
                 Parent = TabPage,
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 0, 0, 40),
                 Size = UDim2.new(1, 0, 1, -40),
                 ScrollBarThickness = 3,
-                ScrollBarImageColor3 = ENV.Library.Theme.Outline,
+                ScrollBarImageColor3 = _0xd5fe._0x0e5f.Theme.Outline,
                 Visible = false,
                 BorderSizePixel = 0
             })
-            local SLeft = ENV.Create("Frame", {Parent = SubContent, BackgroundTransparency = 1, Size = UDim2.new(0.5, -8, 1, 0)})
-            local SRight = ENV.Create("Frame", {Parent = SubContent, BackgroundTransparency = 1, Size = UDim2.new(0.5, -8, 1, 0), Position = UDim2.new(0.5, 8, 0, 0)})
-            ENV.Create("UIListLayout", {Parent = SLeft, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder})
-            ENV.Create("UIListLayout", {Parent = SRight, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder})
+            local SLeft = _0xd5fe._0x36b7("Frame", {Parent = SubContent, BackgroundTransparency = 1, Size = UDim2.new(0.5, -8, 1, 0)})
+            local SRight = _0xd5fe._0x36b7("Frame", {Parent = SubContent, BackgroundTransparency = 1, Size = UDim2.new(0.5, -8, 1, 0), Position = UDim2.new(0.5, 8, 0, 0)})
+            _0xd5fe._0x36b7("UIListLayout", {Parent = SLeft, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder})
+            _0xd5fe._0x36b7("UIListLayout", {Parent = SRight, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder})
             
-            SubBtn.MouseEnter:Connect(function() if Indicator.BackgroundTransparency == 1 then ENV.TweenService:Create(SubBtn, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.Text}):Play() end end)
-            SubBtn.MouseLeave:Connect(function() if Indicator.BackgroundTransparency == 1 then ENV.TweenService:Create(SubBtn, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.TextDim}):Play() end end)
+            SubBtn.MouseEnter:Connect(function() if Indicator.BackgroundTransparency == 1 then _0xd5fe._0xa4bd:Create(SubBtn, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play() end end)
+            SubBtn.MouseLeave:Connect(function() if Indicator.BackgroundTransparency == 1 then _0xd5fe._0xa4bd:Create(SubBtn, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play() end end)
             
             SubBtn.MouseButton1Click:Connect(function()
                 for _,v in pairs(SubTopBar:GetChildren()) do 
                      if v:IsA("TextButton") then
-                        ENV.TweenService:Create(v, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.TextDim}):Play()
-                        ENV.TweenService:Create(v.Frame, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+                        _0xd5fe._0xa4bd:Create(v, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
+                        _0xd5fe._0xa4bd:Create(v.Frame, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
                      end
                 end
-                ENV.TweenService:Create(SubBtn, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.Text}):Play()
-                ENV.TweenService:Create(Indicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+                _0xd5fe._0xa4bd:Create(SubBtn, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play()
+                _0xd5fe._0xa4bd:Create(Indicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
                 
                 for _,v in pairs(TabPage:GetChildren()) do if v:IsA("ScrollingFrame") then v.Visible = false end end
                 SubContent.Visible = true
@@ -1056,8 +1056,8 @@ function ENV.Library:CreateWindow(Settings)
             local subcount = 0 
             for _,v in pairs(SubTopBar:GetChildren()) do if v:IsA("GuiObject") then subcount = subcount + 1 end end
             if subcount == 2 then
-                 ENV.TweenService:Create(SubBtn, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.Text}):Play()
-                 ENV.TweenService:Create(Indicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+                 _0xd5fe._0xa4bd:Create(SubBtn, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play()
+                 _0xd5fe._0xa4bd:Create(Indicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
                  SubContent.Visible = true
             end
 
@@ -1069,52 +1069,52 @@ function ENV.Library:CreateWindow(Settings)
         end
         
         function Tab:CreateGroupbox(Parent, Name)
-            local Box = ENV.Create("Frame", {
+            local Box = _0xd5fe._0x36b7("Frame", {
                 Parent = Parent,
-                BackgroundColor3 = ENV.Library.Theme.Section,
+                BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Section,
                 Size = UDim2.new(1, 0, 0, 50),
                 AutomaticSize = Enum.AutomaticSize.Y,
                 BorderSizePixel = 0
             })
-            ENV.Create("UICorner", {Parent = Box, CornerRadius = UDim.new(0, 8)})
+            _0xd5fe._0x36b7("UICorner", {Parent = Box, CornerRadius = UDim.new(0, 8)})
             
-            local Header = ENV.Create("TextLabel", {
+            local Header = _0xd5fe._0x36b7("TextLabel", {
                 Parent = Box,
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 12, 0, 0),
                 Size = UDim2.new(1, -24, 0, 32),
                 Text = Name,
-                Font = ENV.Library.FontBold,
-                TextColor3 = ENV.Library.Theme.Text,
+                Font = _0xd5fe._0x0e5f.FontBold,
+                TextColor3 = _0xd5fe._0x0e5f.Theme.Text,
                 TextSize = 14,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
-            ENV.Create("Frame", {Parent = Box, BackgroundColor3 = ENV.Library.Theme.Outline, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0,0,0,32), BorderSizePixel = 0})
+            _0xd5fe._0x36b7("Frame", {Parent = Box, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Outline, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0,0,0,32), BorderSizePixel = 0})
 
-            local Container = ENV.Create("Frame", {
+            local Container = _0xd5fe._0x36b7("Frame", {
                 Parent = Box,
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 12, 0, 40),
                 Size = UDim2.new(1, -24, 0, 0),
                 AutomaticSize = Enum.AutomaticSize.Y
             })
-            ENV.Create("UIListLayout", {Parent = Container, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
-            ENV.Create("UIPadding", {Parent = Box, PaddingBottom = UDim.new(0, 12)})
+            _0xd5fe._0x36b7("UIListLayout", {Parent = Container, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8)})
+            _0xd5fe._0x36b7("UIPadding", {Parent = Box, PaddingBottom = UDim.new(0, 12)})
 
             local Group = {}
             
             function Group:AddToggle(Text, Default, Callback)
-                local Frame = ENV.Create("TextButton", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,22), Text = "", AutoButtonColor = false})
-                local Label = ENV.Create("TextLabel", {Parent = Frame, BackgroundTransparency = 1, Text = Text, Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, TextSize = 13, TextXAlignment=Enum.TextXAlignment.Left, Size = UDim2.new(1,-45,1,0)})
+                local Frame = _0xd5fe._0x36b7("TextButton", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,22), Text = "", AutoButtonColor = false})
+                local Label = _0xd5fe._0x36b7("TextLabel", {Parent = Frame, BackgroundTransparency = 1, Text = Text, Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, TextSize = 13, TextXAlignment=Enum.TextXAlignment.Left, Size = UDim2.new(1,-45,1,0)})
                 
-                local Check = ENV.Create("Frame", {Parent = Frame, BackgroundColor3 = ENV.Library.Theme.Element, Size = UDim2.new(0,20,0,20), Position = UDim2.new(1,-20,0,1), BorderSizePixel = 0})
-                ENV.Create("UICorner", {Parent = Check, CornerRadius = UDim.new(0, 5)})
-                local CheckStroke = ENV.Create("UIStroke", {Parent = Check, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                local Check = _0xd5fe._0x36b7("Frame", {Parent = Frame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Size = UDim2.new(0,20,0,20), Position = UDim2.new(1,-20,0,1), BorderSizePixel = 0})
+                _0xd5fe._0x36b7("UICorner", {Parent = Check, CornerRadius = UDim.new(0, 5)})
+                local CheckStroke = _0xd5fe._0x36b7("UIStroke", {Parent = Check, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                 
-                local Checkmark = ENV.Create("TextLabel", {Parent = Check, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0), Text = "✓", Font = ENV.Library.FontBold, TextColor3 = ENV.Library.Theme.Text, TextSize = 16, TextTransparency = 1})
+                local Checkmark = _0xd5fe._0x36b7("TextLabel", {Parent = Check, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0), Text = "✓", Font = _0xd5fe._0x0e5f.FontBold, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 16, TextTransparency = 1})
                 
-                Frame.MouseEnter:Connect(function() ENV.TweenService:Create(CheckStroke, TweenInfo.new(0.15), {Color = ENV.Library.AccentColor}):Play() end)
-                Frame.MouseLeave:Connect(function() ENV.TweenService:Create(CheckStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play() end)
+                Frame.MouseEnter:Connect(function() _0xd5fe._0xa4bd:Create(CheckStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play() end)
+                Frame.MouseLeave:Connect(function() _0xd5fe._0xa4bd:Create(CheckStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() end)
                 
                 local State = Default or false
                 local ToggleObj = {
@@ -1126,23 +1126,23 @@ function ENV.Library:CreateWindow(Settings)
                     ToggleObj.Value = State
                     if instant then
                         if State then
-                            Check.BackgroundColor3 = ENV.Library.AccentColor
+                            Check.BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor
                             Checkmark.TextTransparency = 0
-                            Label.TextColor3 = ENV.Library.Theme.Text
+                            Label.TextColor3 = _0xd5fe._0x0e5f.Theme.Text
                         else
-                            Check.BackgroundColor3 = ENV.Library.Theme.Element
+                            Check.BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element
                             Checkmark.TextTransparency = 1
-                            Label.TextColor3 = ENV.Library.Theme.TextDim
+                            Label.TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim
                         end
                     else
                         if State then 
-                            ENV.TweenService:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = ENV.Library.AccentColor}):Play() 
-                            ENV.TweenService:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
-                            ENV.TweenService:Create(Label, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.Text}):Play()
+                            _0xd5fe._0xa4bd:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play() 
+                            _0xd5fe._0xa4bd:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
+                            _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play()
                         else 
-                            ENV.TweenService:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = ENV.Library.Theme.Element}):Play()
-                            ENV.TweenService:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
-                            ENV.TweenService:Create(Label, TweenInfo.new(0.2), {TextColor3 = ENV.Library.Theme.TextDim}):Play()
+                            _0xd5fe._0xa4bd:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element}):Play()
+                            _0xd5fe._0xa4bd:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+                            _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
                         end
                     end
                     pcall(Callback, State)
@@ -1153,25 +1153,25 @@ function ENV.Library:CreateWindow(Settings)
                 Frame.MouseButton1Click:Connect(function() State = not State Update() end)
                 Update()
                 
-                ENV.Library.Options[Text] = ToggleObj
+                _0xd5fe._0x0e5f.Options[Text] = ToggleObj
                 return ToggleObj
             end
             
             function Group:AddSlider(Text, Min, Max, Default, Callback)
-                 local Frame = ENV.Create("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,42)})
-                 local Label = ENV.Create("TextLabel", {Parent = Frame, BackgroundTransparency = 1, Text = Text, TextColor3 = ENV.Library.Theme.TextDim, Font = ENV.Library.Font, TextSize=13, Size = UDim2.new(1,0,0,16), TextXAlignment=Enum.TextXAlignment.Left})
+                 local Frame = _0xd5fe._0x36b7("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,42)})
+                 local Label = _0xd5fe._0x36b7("TextLabel", {Parent = Frame, BackgroundTransparency = 1, Text = Text, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, Font = _0xd5fe._0x0e5f.Font, TextSize=13, Size = UDim2.new(1,0,0,16), TextXAlignment=Enum.TextXAlignment.Left})
                  
-                 local Bg = ENV.Create("Frame", {Parent = Frame, BackgroundColor3 = ENV.Library.Theme.Element, Size = UDim2.new(1,0,0,7), Position = UDim2.new(0,0,0,24), BorderSizePixel = 0})
-                 ENV.Create("UICorner", {Parent = Bg, CornerRadius = UDim.new(1,0)})
-                 local BgStroke = ENV.Create("UIStroke", {Parent = Bg, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                 local Bg = _0xd5fe._0x36b7("Frame", {Parent = Frame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Size = UDim2.new(1,0,0,7), Position = UDim2.new(0,0,0,24), BorderSizePixel = 0})
+                 _0xd5fe._0x36b7("UICorner", {Parent = Bg, CornerRadius = UDim.new(1,0)})
+                 local BgStroke = _0xd5fe._0x36b7("UIStroke", {Parent = Bg, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                  
-                 local Fill = ENV.Create("Frame", {Parent = Bg, BackgroundColor3 = ENV.Library.AccentColor, Size = UDim2.new(0,0,1,0), BorderSizePixel = 0})
-                 ENV.Create("UICorner", {Parent = Fill, CornerRadius = UDim.new(1,0)})
+                 local Fill = _0xd5fe._0x36b7("Frame", {Parent = Bg, BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor, Size = UDim2.new(0,0,1,0), BorderSizePixel = 0})
+                 _0xd5fe._0x36b7("UICorner", {Parent = Fill, CornerRadius = UDim.new(1,0)})
                  
-                local Value = ENV.Create("TextLabel", {Parent = Frame, BackgroundTransparency = 1, Text = tostring(Default), TextColor3 = ENV.Library.Theme.Text, Font=ENV.Library.Font, TextSize=13, Size = UDim2.new(1,0,0,16), TextXAlignment=Enum.TextXAlignment.Right})
+                local Value = _0xd5fe._0x36b7("TextLabel", {Parent = Frame, BackgroundTransparency = 1, Text = tostring(Default), TextColor3 = _0xd5fe._0x0e5f.Theme.Text, Font=_0xd5fe._0x0e5f.Font, TextSize=13, Size = UDim2.new(1,0,0,16), TextXAlignment=Enum.TextXAlignment.Right})
                  
-                 Bg.MouseEnter:Connect(function() ENV.TweenService:Create(BgStroke, TweenInfo.new(0.15), {Color = ENV.Library.AccentColor}):Play() ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.Text}):Play() end)
-                 Bg.MouseLeave:Connect(function() ENV.TweenService:Create(BgStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play() ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.TextDim}):Play() end)
+                 Bg.MouseEnter:Connect(function() _0xd5fe._0xa4bd:Create(BgStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play() _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play() end)
+                 Bg.MouseLeave:Connect(function() _0xd5fe._0xa4bd:Create(BgStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play() end)
                  
                  local CurrentValue = Default or Min
                  local SliderObj = {
@@ -1186,7 +1186,7 @@ function ENV.Library:CreateWindow(Settings)
                      if instant then
                          Fill.Size = UDim2.new((v-Min)/(Max-Min), 0, 1, 0)
                      else
-                         ENV.TweenService:Create(Fill, TweenInfo.new(0.1), {Size = UDim2.new((v-Min)/(Max-Min), 0, 1, 0)}):Play()
+                         _0xd5fe._0xa4bd:Create(Fill, TweenInfo.new(0.1), {Size = UDim2.new((v-Min)/(Max-Min), 0, 1, 0)}):Play()
                      end
                      Value.Text = math.floor(v*100)/100
                      pcall(Callback, v)
@@ -1196,32 +1196,32 @@ function ENV.Library:CreateWindow(Settings)
                  
                  local Dragging = false
                  Bg.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then Dragging = true Set(Min + ((Max-Min) * math.clamp((i.Position.X - Bg.AbsolutePosition.X)/Bg.AbsoluteSize.X, 0, 1))) end end)
-                 ENV.InputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then Dragging = false end end)
-                 ENV.InputService.InputChanged:Connect(function(i) if Dragging and i.UserInputType == Enum.UserInputType.MouseMovement then Set(Min + ((Max-Min) * math.clamp((i.Position.X - Bg.AbsolutePosition.X)/Bg.AbsoluteSize.X, 0, 1))) end end)
+                 _0xd5fe._0x8efd.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then Dragging = false end end)
+                 _0xd5fe._0x8efd.InputChanged:Connect(function(i) if Dragging and i.UserInputType == Enum.UserInputType.MouseMovement then Set(Min + ((Max-Min) * math.clamp((i.Position.X - Bg.AbsolutePosition.X)/Bg.AbsoluteSize.X, 0, 1))) end end)
                  Set(Default or Min)
                  
-                 ENV.Library.Options[Text] = SliderObj
+                 _0xd5fe._0x0e5f.Options[Text] = SliderObj
                  return SliderObj
             end
             
             function Group:AddDropdown(Text, Options, Default, Callback)
-                local DropFrame = ENV.Create("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,50), ClipsDescendants = false})
-                local Label = ENV.Create("TextLabel", {Parent = DropFrame, Text = Text, Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, Size = UDim2.new(1,0,0,18), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
+                local DropFrame = _0xd5fe._0x36b7("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,50), ClipsDescendants = false})
+                local Label = _0xd5fe._0x36b7("TextLabel", {Parent = DropFrame, Text = Text, Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, Size = UDim2.new(1,0,0,18), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
                 
-                local Btn = ENV.Create("TextButton", {Parent = DropFrame, BackgroundColor3 = ENV.Library.Theme.Element, Size = UDim2.new(1,0,0,28), Position = UDim2.new(0,0,0,20), Text = "", Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 13, AutoButtonColor = false, BorderSizePixel = 0})
-                ENV.Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0,6)})
-                local DropStroke = ENV.Create("UIStroke", {Parent = Btn, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                local Btn = _0xd5fe._0x36b7("TextButton", {Parent = DropFrame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Size = UDim2.new(1,0,0,28), Position = UDim2.new(0,0,0,20), Text = "", Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 13, AutoButtonColor = false, BorderSizePixel = 0})
+                _0xd5fe._0x36b7("UICorner", {Parent = Btn, CornerRadius = UDim.new(0,6)})
+                local DropStroke = _0xd5fe._0x36b7("UIStroke", {Parent = Btn, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                 
-                local BtnText = ENV.Create("TextLabel", {Parent = Btn, Text = tostring(Default or "Select..."), BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-40,1,0), Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left})
+                local BtnText = _0xd5fe._0x36b7("TextLabel", {Parent = Btn, Text = tostring(Default or "Select..."), BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-40,1,0), Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left})
                 
-                local Arrow = ENV.Create("ImageLabel", {Parent = Btn, Image = "rbxassetid://7072706796", ImageColor3 = ENV.Library.Theme.TextDim, Size = UDim2.new(0,16,0,16), Position = UDim2.new(1,-26,0.5,-8), BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Fit})
+                local Arrow = _0xd5fe._0x36b7("ImageLabel", {Parent = Btn, Image = "rbxassetid://7072706796", ImageColor3 = _0xd5fe._0x0e5f.Theme.TextDim, Size = UDim2.new(0,16,0,16), Position = UDim2.new(1,-26,0.5,-8), BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Fit})
                 
-                local ListFrame = ENV.Create("Frame", {Parent = DropFrame, BackgroundColor3 = ENV.Library.Theme.Section, Position = UDim2.new(0,0,0,50), Size = UDim2.new(1,0,0,0), BorderSizePixel = 0, ZIndex = 50, ClipsDescendants = true})
-                ENV.Create("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0,6)})
-                ENV.Create("UIStroke", {Parent = ListFrame, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                local ListFrame = _0xd5fe._0x36b7("Frame", {Parent = DropFrame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Section, Position = UDim2.new(0,0,0,50), Size = UDim2.new(1,0,0,0), BorderSizePixel = 0, ZIndex = 50, ClipsDescendants = true})
+                _0xd5fe._0x36b7("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0,6)})
+                _0xd5fe._0x36b7("UIStroke", {Parent = ListFrame, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                 
-                local List = ENV.Create("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0), Position = UDim2.new(0,0,0,0), BorderSizePixel = 0, ScrollBarThickness = 0, ScrollBarImageColor3 = ENV.Library.AccentColor, ZIndex = 51, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = Enum.AutomaticSize.Y})
-                ENV.Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,0)})
+                local List = _0xd5fe._0x36b7("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0), Position = UDim2.new(0,0,0,0), BorderSizePixel = 0, ScrollBarThickness = 0, ScrollBarImageColor3 = _0xd5fe._0x0e5f.AccentColor, ZIndex = 51, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = Enum.AutomaticSize.Y})
+                _0xd5fe._0x36b7("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,0)})
                 
                 local Open = false
                 
@@ -1231,23 +1231,23 @@ function ENV.Library:CreateWindow(Settings)
                 }
                 
                 local function CreateOption(opt)
-                    local OptBtn = ENV.Create("TextButton", {Parent = List, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,28), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
-                    local OptText = ENV.Create("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-20,1,0), Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
+                    local OptBtn = _0xd5fe._0x36b7("TextButton", {Parent = List, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,28), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
+                    local OptText = _0xd5fe._0x36b7("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-20,1,0), Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
                     
                     OptBtn.MouseEnter:Connect(function() 
-                        ENV.TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = ENV.Library.AccentColor}):Play() 
-                        ENV.TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = ENV.Library.Theme.Text}):Play()
+                        _0xd5fe._0xa4bd:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play() 
+                        _0xd5fe._0xa4bd:Create(OptText, TweenInfo.new(0.1), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play()
                     end)
                     OptBtn.MouseLeave:Connect(function() 
-                        ENV.TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play() 
-                        ENV.TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = ENV.Library.Theme.TextDim}):Play()
+                        _0xd5fe._0xa4bd:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play() 
+                        _0xd5fe._0xa4bd:Create(OptText, TweenInfo.new(0.1), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
                     end)
                     OptBtn.MouseButton1Click:Connect(function()
                         BtnText.Text = opt
                         DropdownObj.Value = opt
                         Open = false
-                        ENV.TweenService:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,0)}):Play()
-                        ENV.TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = 0}):Play()
+                        _0xd5fe._0xa4bd:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,0)}):Play()
+                        _0xd5fe._0xa4bd:Create(Arrow, TweenInfo.new(0.2), {Rotation = 0}):Play()
                         pcall(Callback, opt)
                     end)
                 end
@@ -1269,25 +1269,25 @@ function ENV.Library:CreateWindow(Settings)
                 end
                 
                 Btn.MouseEnter:Connect(function() 
-                    ENV.TweenService:Create(DropStroke, TweenInfo.new(0.15), {Color = ENV.Library.AccentColor}):Play() 
-                    ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.Text}):Play() 
-                    ENV.TweenService:Create(Arrow, TweenInfo.new(0.15), {ImageColor3 = ENV.Library.AccentColor}):Play()
+                    _0xd5fe._0xa4bd:Create(DropStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play() 
+                    _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play() 
+                    _0xd5fe._0xa4bd:Create(Arrow, TweenInfo.new(0.15), {ImageColor3 = _0xd5fe._0x0e5f.AccentColor}):Play()
                 end)
                 Btn.MouseLeave:Connect(function() 
-                    ENV.TweenService:Create(DropStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play() 
-                    ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.TextDim}):Play() 
-                    ENV.TweenService:Create(Arrow, TweenInfo.new(0.15), {ImageColor3 = ENV.Library.Theme.TextDim}):Play()
+                    _0xd5fe._0xa4bd:Create(DropStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() 
+                    _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play() 
+                    _0xd5fe._0xa4bd:Create(Arrow, TweenInfo.new(0.15), {ImageColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
                 end)
                 
                 Btn.MouseButton1Click:Connect(function()
                     Open = not Open
                     if Open then
                         local height = math.min(#Options * 28 + 6, 150)
-                        ENV.TweenService:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,height)}):Play()
-                        ENV.TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = 180}):Play()
+                        _0xd5fe._0xa4bd:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,height)}):Play()
+                        _0xd5fe._0xa4bd:Create(Arrow, TweenInfo.new(0.2), {Rotation = 180}):Play()
                     else
-                        ENV.TweenService:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,0)}):Play()
-                        ENV.TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = 0}):Play()
+                        _0xd5fe._0xa4bd:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,0)}):Play()
+                        _0xd5fe._0xa4bd:Create(Arrow, TweenInfo.new(0.2), {Rotation = 0}):Play()
                     end
                 end)
                 
@@ -1295,29 +1295,29 @@ function ENV.Library:CreateWindow(Settings)
                     CreateOption(opt)
                 end
                 
-                ENV.Library.Options[Text] = DropdownObj
+                _0xd5fe._0x0e5f.Options[Text] = DropdownObj
                 return DropdownObj
             end
             
             function Group:AddMultiDropdown(Text, Options, Defaults, Callback)
                 Defaults = Defaults or {}
-                local DropFrame = ENV.Create("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,50), ClipsDescendants = false})
-                local Label = ENV.Create("TextLabel", {Parent = DropFrame, Text = Text, Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, Size = UDim2.new(1,0,0,18), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
+                local DropFrame = _0xd5fe._0x36b7("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,50), ClipsDescendants = false})
+                local Label = _0xd5fe._0x36b7("TextLabel", {Parent = DropFrame, Text = Text, Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, Size = UDim2.new(1,0,0,18), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
                 
-                local Btn = ENV.Create("TextButton", {Parent = DropFrame, BackgroundColor3 = ENV.Library.Theme.Element, Size = UDim2.new(1,0,0,28), Position = UDim2.new(0,0,0,20), Text = "", Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 13, AutoButtonColor = false, BorderSizePixel = 0})
-                ENV.Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0,6)})
-                local DropStroke = ENV.Create("UIStroke", {Parent = Btn, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                local Btn = _0xd5fe._0x36b7("TextButton", {Parent = DropFrame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Size = UDim2.new(1,0,0,28), Position = UDim2.new(0,0,0,20), Text = "", Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 13, AutoButtonColor = false, BorderSizePixel = 0})
+                _0xd5fe._0x36b7("UICorner", {Parent = Btn, CornerRadius = UDim.new(0,6)})
+                local DropStroke = _0xd5fe._0x36b7("UIStroke", {Parent = Btn, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                 
-                local BtnText = ENV.Create("TextLabel", {Parent = Btn, Text = "None selected", BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-40,1,0), Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd})
+                local BtnText = _0xd5fe._0x36b7("TextLabel", {Parent = Btn, Text = "None selected", BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-40,1,0), Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd})
                 
-                local Arrow = ENV.Create("ImageLabel", {Parent = Btn, Image = "rbxassetid://7072706796", ImageColor3 = ENV.Library.Theme.TextDim, Size = UDim2.new(0,16,0,16), Position = UDim2.new(1,-26,0.5,-8), BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Fit})
+                local Arrow = _0xd5fe._0x36b7("ImageLabel", {Parent = Btn, Image = "rbxassetid://7072706796", ImageColor3 = _0xd5fe._0x0e5f.Theme.TextDim, Size = UDim2.new(0,16,0,16), Position = UDim2.new(1,-26,0.5,-8), BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Fit})
                 
-                local ListFrame = ENV.Create("Frame", {Parent = DropFrame, BackgroundColor3 = ENV.Library.Theme.Section, Position = UDim2.new(0,0,0,50), Size = UDim2.new(1,0,0,0), BorderSizePixel = 0, ZIndex = 50, ClipsDescendants = true})
-                ENV.Create("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0,6)})
-                ENV.Create("UIStroke", {Parent = ListFrame, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                local ListFrame = _0xd5fe._0x36b7("Frame", {Parent = DropFrame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Section, Position = UDim2.new(0,0,0,50), Size = UDim2.new(1,0,0,0), BorderSizePixel = 0, ZIndex = 50, ClipsDescendants = true})
+                _0xd5fe._0x36b7("UICorner", {Parent = ListFrame, CornerRadius = UDim.new(0,6)})
+                _0xd5fe._0x36b7("UIStroke", {Parent = ListFrame, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                 
-                local List = ENV.Create("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0), Position = UDim2.new(0,0,0,0), BorderSizePixel = 0, ScrollBarThickness = 0, ScrollBarImageColor3 = ENV.Library.AccentColor, ZIndex = 51, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = Enum.AutomaticSize.Y})
-                ENV.Create("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,0)})
+                local List = _0xd5fe._0x36b7("ScrollingFrame", {Parent = ListFrame, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0), Position = UDim2.new(0,0,0,0), BorderSizePixel = 0, ScrollBarThickness = 0, ScrollBarImageColor3 = _0xd5fe._0x0e5f.AccentColor, ZIndex = 51, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = Enum.AutomaticSize.Y})
+                _0xd5fe._0x36b7("UIListLayout", {Parent = List, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,0)})
                 
                 local Open = false
                 local Selected = {}
@@ -1361,31 +1361,31 @@ function ENV.Library:CreateWindow(Settings)
                 local OptionButtons = {}
                 
                 local function CreateOption(opt)
-                    local OptBtn = ENV.Create("TextButton", {Parent = List, BackgroundTransparency = Selected[opt] and 0 or 1, BackgroundColor3 = ENV.Library.AccentColor, Size = UDim2.new(1,0,0,28), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
-                    local OptText = ENV.Create("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-20,1,0), Font = ENV.Library.Font, TextColor3 = Selected[opt] and ENV.Library.Theme.Text or ENV.Library.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
+                    local OptBtn = _0xd5fe._0x36b7("TextButton", {Parent = List, BackgroundTransparency = Selected[opt] and 0 or 1, BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor, Size = UDim2.new(1,0,0,28), Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 52})
+                    local OptText = _0xd5fe._0x36b7("TextLabel", {Parent = OptBtn, Text = opt, BackgroundTransparency = 1, Position = UDim2.new(0,10,0,0), Size = UDim2.new(1,-20,1,0), Font = _0xd5fe._0x0e5f.Font, TextColor3 = Selected[opt] and _0xd5fe._0x0e5f.Theme.Text or _0xd5fe._0x0e5f.Theme.TextDim, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 53})
                     
                     OptionButtons[opt] = {Btn = OptBtn, Text = OptText}
                     
                     local function UpdateOption()
                         if Selected[opt] then
-                            ENV.TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = ENV.Library.AccentColor}):Play()
-                            ENV.TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = ENV.Library.Theme.Text}):Play()
+                            _0xd5fe._0xa4bd:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play()
+                            _0xd5fe._0xa4bd:Create(OptText, TweenInfo.new(0.1), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play()
                         else
-                            ENV.TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play()
-                            ENV.TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = ENV.Library.Theme.TextDim}):Play()
+                            _0xd5fe._0xa4bd:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play()
+                            _0xd5fe._0xa4bd:Create(OptText, TweenInfo.new(0.1), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
                         end
                     end
                     
                     OptBtn.MouseEnter:Connect(function() 
                         if not Selected[opt] then
-                            ENV.TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = ENV.Library.AccentColor}):Play()
+                            _0xd5fe._0xa4bd:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 0, BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play()
                         end
-                        ENV.TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = ENV.Library.Theme.Text}):Play()
+                        _0xd5fe._0xa4bd:Create(OptText, TweenInfo.new(0.1), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play()
                     end)
                     OptBtn.MouseLeave:Connect(function() 
                         if not Selected[opt] then
-                            ENV.TweenService:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play()
-                            ENV.TweenService:Create(OptText, TweenInfo.new(0.1), {TextColor3 = ENV.Library.Theme.TextDim}):Play()
+                            _0xd5fe._0xa4bd:Create(OptBtn, TweenInfo.new(0.1), {BackgroundTransparency = 1}):Play()
+                            _0xd5fe._0xa4bd:Create(OptText, TweenInfo.new(0.1), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
                         end
                     end)
                     OptBtn.MouseButton1Click:Connect(function()
@@ -1408,11 +1408,11 @@ function ENV.Library:CreateWindow(Settings)
                     for opt, elements in pairs(OptionButtons) do
                         if Selected[opt] then
                             elements.Btn.BackgroundTransparency = 0
-                            elements.Btn.BackgroundColor3 = ENV.Library.AccentColor
-                            elements.Text.TextColor3 = ENV.Library.Theme.Text
+                            elements.Btn.BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor
+                            elements.Text.TextColor3 = _0xd5fe._0x0e5f.Theme.Text
                         else
                             elements.Btn.BackgroundTransparency = 1
-                            elements.Text.TextColor3 = ENV.Library.Theme.TextDim
+                            elements.Text.TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim
                         end
                     end
                     pcall(Callback, GetSelectedArray())
@@ -1431,25 +1431,25 @@ function ENV.Library:CreateWindow(Settings)
                 end
                 
                 Btn.MouseEnter:Connect(function() 
-                    ENV.TweenService:Create(DropStroke, TweenInfo.new(0.15), {Color = ENV.Library.AccentColor}):Play() 
-                    ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.Text}):Play() 
-                    ENV.TweenService:Create(Arrow, TweenInfo.new(0.15), {ImageColor3 = ENV.Library.AccentColor}):Play()
+                    _0xd5fe._0xa4bd:Create(DropStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play() 
+                    _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play() 
+                    _0xd5fe._0xa4bd:Create(Arrow, TweenInfo.new(0.15), {ImageColor3 = _0xd5fe._0x0e5f.AccentColor}):Play()
                 end)
                 Btn.MouseLeave:Connect(function() 
-                    ENV.TweenService:Create(DropStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play() 
-                    ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.TextDim}):Play() 
-                    ENV.TweenService:Create(Arrow, TweenInfo.new(0.15), {ImageColor3 = ENV.Library.Theme.TextDim}):Play()
+                    _0xd5fe._0xa4bd:Create(DropStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() 
+                    _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play() 
+                    _0xd5fe._0xa4bd:Create(Arrow, TweenInfo.new(0.15), {ImageColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
                 end)
                 
                 Btn.MouseButton1Click:Connect(function()
                     Open = not Open
                     if Open then
                         local height = math.min(#Options * 28 + 6, 180)
-                        ENV.TweenService:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,height)}):Play()
-                        ENV.TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = 180}):Play()
+                        _0xd5fe._0xa4bd:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,height)}):Play()
+                        _0xd5fe._0xa4bd:Create(Arrow, TweenInfo.new(0.2), {Rotation = 180}):Play()
                     else
-                        ENV.TweenService:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,0)}):Play()
-                        ENV.TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = 0}):Play()
+                        _0xd5fe._0xa4bd:Create(ListFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1,0,0,0)}):Play()
+                        _0xd5fe._0xa4bd:Create(Arrow, TweenInfo.new(0.2), {Rotation = 0}):Play()
                     end
                 end)
                 
@@ -1459,34 +1459,34 @@ function ENV.Library:CreateWindow(Settings)
                 
                 UpdateText()
                 
-                ENV.Library.Options[Text] = MultiDropdownObj
+                _0xd5fe._0x0e5f.Options[Text] = MultiDropdownObj
                 return MultiDropdownObj
             end
             
             function Group:AddDivider()
-                ENV.Create("Frame", {
+                _0xd5fe._0x36b7("Frame", {
                     Parent = Container,
-                    BackgroundColor3 = ENV.Library.Theme.Outline,
+                    BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Outline,
                     Size = UDim2.new(1, 0, 0, 1),
                     BorderSizePixel = 0
                 })
             end
             
             function Group:AddColorPicker(Text, Default, Callback)
-                local Frame = ENV.Create("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,26)})
-                local Label = ENV.Create("TextLabel", {Parent = Frame, Text = Text, Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, Size = UDim2.new(1,-75,1,0), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
+                local Frame = _0xd5fe._0x36b7("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,26)})
+                local Label = _0xd5fe._0x36b7("TextLabel", {Parent = Frame, Text = Text, Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, Size = UDim2.new(1,-75,1,0), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
                 
-                local ColorBtn = ENV.Create("TextButton", {Parent = Frame, BackgroundColor3 = Default or Color3.new(1,1,1), Size = UDim2.new(0,70,0,22), Position = UDim2.new(1,-70,0,2), Text = "", Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 11, AutoButtonColor = false, BorderSizePixel = 0})
-                ENV.Create("UICorner", {Parent = ColorBtn, CornerRadius = UDim.new(0,5)})
-                local ColorStroke = ENV.Create("UIStroke", {Parent = ColorBtn, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                local ColorBtn = _0xd5fe._0x36b7("TextButton", {Parent = Frame, BackgroundColor3 = Default or Color3.new(1,1,1), Size = UDim2.new(0,70,0,22), Position = UDim2.new(1,-70,0,2), Text = "", Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 11, AutoButtonColor = false, BorderSizePixel = 0})
+                _0xd5fe._0x36b7("UICorner", {Parent = ColorBtn, CornerRadius = UDim.new(0,5)})
+                local ColorStroke = _0xd5fe._0x36b7("UIStroke", {Parent = ColorBtn, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                 
                 ColorBtn.MouseEnter:Connect(function() 
-                    ENV.TweenService:Create(ColorStroke, TweenInfo.new(0.15), {Color = ENV.Library.AccentColor}):Play()
-                    ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.Text}):Play()
+                    _0xd5fe._0xa4bd:Create(ColorStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play()
+                    _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play()
                 end)
                 ColorBtn.MouseLeave:Connect(function() 
-                    ENV.TweenService:Create(ColorStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play()
-                    ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.TextDim}):Play()
+                    _0xd5fe._0xa4bd:Create(ColorStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play()
+                    _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
                 end)
                 
                 local function RGBToHSV(color)
@@ -1523,79 +1523,79 @@ function ENV.Library:CreateWindow(Settings)
                     if pickerX + 280 > screenSize.X then pickerX = mainPos.X - 290 end
                     if pickerY + 320 > screenSize.Y then pickerY = screenSize.Y - 330 end
                     
-                    local Picker = ENV.Create("Frame", {Parent = ScreenGui, BackgroundColor3 = ENV.Library.Theme.Section, Position = UDim2.new(0, pickerX, 0, pickerY), Size = UDim2.new(0, 280, 0, 310), BorderSizePixel = 0, ZIndex = 100})
+                    local Picker = _0xd5fe._0x36b7("Frame", {Parent = ScreenGui, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Section, Position = UDim2.new(0, pickerX, 0, pickerY), Size = UDim2.new(0, 280, 0, 310), BorderSizePixel = 0, ZIndex = 100})
                     ActivePicker = Picker
-                    ENV.Create("UICorner", {Parent = Picker, CornerRadius = UDim.new(0,8)})
-                    ENV.Create("UIStroke", {Parent = Picker, Color = ENV.Library.Theme.Outline, Thickness = 1})
-                    ENV.AddShadow(Picker, 0.3)
+                    _0xd5fe._0x36b7("UICorner", {Parent = Picker, CornerRadius = UDim.new(0,8)})
+                    _0xd5fe._0x36b7("UIStroke", {Parent = Picker, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+                    _0xd5fe._0xfb1b(Picker, 0.3)
                     
-                    local PickerTopbar = ENV.Create("Frame", {Parent = Picker, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 32)})
-                    ENV.MakeDraggable(PickerTopbar, Picker)
+                    local PickerTopbar = _0xd5fe._0x36b7("Frame", {Parent = Picker, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 32)})
+                    _0xd5fe._0x02b5(PickerTopbar, Picker)
                     
-                    ENV.Create("TextLabel", {Parent = Picker, Text = "Color Picker", Position = UDim2.new(0,12,0,8), Size = UDim2.new(1,-50,0,20), Font = ENV.Library.FontBold, TextColor3 = ENV.Library.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1, ZIndex = 101})
+                    _0xd5fe._0x36b7("TextLabel", {Parent = Picker, Text = "Color Picker", Position = UDim2.new(0,12,0,8), Size = UDim2.new(1,-50,0,20), Font = _0xd5fe._0x0e5f.FontBold, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1, ZIndex = 101})
                     
-                    local CloseX = ENV.Create("TextButton", {Parent = Picker, Text = "×", Position = UDim2.new(1,-28,0,4), Size = UDim2.new(0,24,0,24), BackgroundTransparency = 1, Font = ENV.Library.FontBold, TextColor3 = ENV.Library.Theme.TextDim, TextSize = 20, AutoButtonColor = false, ZIndex = 101})
-                    CloseX.MouseEnter:Connect(function() ENV.TweenService:Create(CloseX, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255,100,100)}):Play() end)
-                    CloseX.MouseLeave:Connect(function() ENV.TweenService:Create(CloseX, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.TextDim}):Play() end)
+                    local CloseX = _0xd5fe._0x36b7("TextButton", {Parent = Picker, Text = "×", Position = UDim2.new(1,-28,0,4), Size = UDim2.new(0,24,0,24), BackgroundTransparency = 1, Font = _0xd5fe._0x0e5f.FontBold, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, TextSize = 20, AutoButtonColor = false, ZIndex = 101})
+                    CloseX.MouseEnter:Connect(function() _0xd5fe._0xa4bd:Create(CloseX, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255,100,100)}):Play() end)
+                    CloseX.MouseLeave:Connect(function() _0xd5fe._0xa4bd:Create(CloseX, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play() end)
                     CloseX.MouseButton1Click:Connect(function() Picker:Destroy() ActivePicker = nil end)
                     
-                    local SVPicker = ENV.Create("ImageButton", {Parent = Picker, BackgroundColor3 = Color3.fromHSV(CurrentColor.H, 1, 1), Position = UDim2.new(0,12,0,38), Size = UDim2.new(1,-24,0,140), Image = "rbxassetid://4155801252", BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 101})
-                    ENV.Create("UICorner", {Parent = SVPicker, CornerRadius = UDim.new(0,6)})
-                    ENV.Create("UIStroke", {Parent = SVPicker, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                    local SVPicker = _0xd5fe._0x36b7("ImageButton", {Parent = Picker, BackgroundColor3 = Color3.fromHSV(CurrentColor.H, 1, 1), Position = UDim2.new(0,12,0,38), Size = UDim2.new(1,-24,0,140), Image = "rbxassetid://4155801252", BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 101})
+                    _0xd5fe._0x36b7("UICorner", {Parent = SVPicker, CornerRadius = UDim.new(0,6)})
+                    _0xd5fe._0x36b7("UIStroke", {Parent = SVPicker, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                     
-                    local SVCursor = ENV.Create("Frame", {Parent = SVPicker, BackgroundColor3 = Color3.new(1,1,1), Size = UDim2.new(0,12,0,12), AnchorPoint = Vector2.new(0.5,0.5), Position = UDim2.new(CurrentColor.S, 0, 1 - CurrentColor.V, 0), BorderSizePixel = 0, ZIndex = 102})
-                    ENV.Create("UICorner", {Parent = SVCursor, CornerRadius = UDim.new(1,0)})
-                    ENV.Create("UIStroke", {Parent = SVCursor, Color = Color3.new(0,0,0), Thickness = 2})
+                    local SVCursor = _0xd5fe._0x36b7("Frame", {Parent = SVPicker, BackgroundColor3 = Color3.new(1,1,1), Size = UDim2.new(0,12,0,12), AnchorPoint = Vector2.new(0.5,0.5), Position = UDim2.new(CurrentColor.S, 0, 1 - CurrentColor.V, 0), BorderSizePixel = 0, ZIndex = 102})
+                    _0xd5fe._0x36b7("UICorner", {Parent = SVCursor, CornerRadius = UDim.new(1,0)})
+                    _0xd5fe._0x36b7("UIStroke", {Parent = SVCursor, Color = Color3.new(0,0,0), Thickness = 2})
                     
-                    local HuePicker = ENV.Create("ImageButton", {Parent = Picker, BackgroundColor3 = Color3.new(1,1,1), Position = UDim2.new(0,12,0,186), Size = UDim2.new(1,-24,0,16), Image = "rbxassetid://3641079629", ScaleType = Enum.ScaleType.Crop, BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 101})
-                    ENV.Create("UICorner", {Parent = HuePicker, CornerRadius = UDim.new(0,4)})
-                    ENV.Create("UIStroke", {Parent = HuePicker, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                    local HuePicker = _0xd5fe._0x36b7("ImageButton", {Parent = Picker, BackgroundColor3 = Color3.new(1,1,1), Position = UDim2.new(0,12,0,186), Size = UDim2.new(1,-24,0,16), Image = "rbxassetid://3641079629", ScaleType = Enum.ScaleType.Crop, BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 101})
+                    _0xd5fe._0x36b7("UICorner", {Parent = HuePicker, CornerRadius = UDim.new(0,4)})
+                    _0xd5fe._0x36b7("UIStroke", {Parent = HuePicker, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                     
-                    local HueCursor = ENV.Create("Frame", {Parent = HuePicker, BackgroundColor3 = Color3.new(1,1,1), Size = UDim2.new(0,6,1,4), AnchorPoint = Vector2.new(0.5,0.5), Position = UDim2.new(CurrentColor.H, 0, 0.5, 0), BorderSizePixel = 0, ZIndex = 102})
-                    ENV.Create("UICorner", {Parent = HueCursor, CornerRadius = UDim.new(0,2)})
-                    ENV.Create("UIStroke", {Parent = HueCursor, Color = Color3.new(0,0,0), Thickness = 1})
+                    local HueCursor = _0xd5fe._0x36b7("Frame", {Parent = HuePicker, BackgroundColor3 = Color3.new(1,1,1), Size = UDim2.new(0,6,1,4), AnchorPoint = Vector2.new(0.5,0.5), Position = UDim2.new(CurrentColor.H, 0, 0.5, 0), BorderSizePixel = 0, ZIndex = 102})
+                    _0xd5fe._0x36b7("UICorner", {Parent = HueCursor, CornerRadius = UDim.new(0,2)})
+                    _0xd5fe._0x36b7("UIStroke", {Parent = HueCursor, Color = Color3.new(0,0,0), Thickness = 1})
                     
-                    ENV.Create("TextLabel", {Parent = Picker, Text = "Preview", Position = UDim2.new(0,12,0,210), Size = UDim2.new(0,50,0,14), Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, TextSize = 11, BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 101})
-                    local Preview = ENV.Create("Frame", {Parent = Picker, BackgroundColor3 = Color3.fromHSV(CurrentColor.H, CurrentColor.S, CurrentColor.V), Position = UDim2.new(0,12,0,226), Size = UDim2.new(0,50,0,30), BorderSizePixel = 0, ZIndex = 101})
-                    ENV.Create("UICorner", {Parent = Preview, CornerRadius = UDim.new(0,6)})
-                    ENV.Create("UIStroke", {Parent = Preview, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                    _0xd5fe._0x36b7("TextLabel", {Parent = Picker, Text = "Preview", Position = UDim2.new(0,12,0,210), Size = UDim2.new(0,50,0,14), Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, TextSize = 11, BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 101})
+                    local Preview = _0xd5fe._0x36b7("Frame", {Parent = Picker, BackgroundColor3 = Color3.fromHSV(CurrentColor.H, CurrentColor.S, CurrentColor.V), Position = UDim2.new(0,12,0,226), Size = UDim2.new(0,50,0,30), BorderSizePixel = 0, ZIndex = 101})
+                    _0xd5fe._0x36b7("UICorner", {Parent = Preview, CornerRadius = UDim.new(0,6)})
+                    _0xd5fe._0x36b7("UIStroke", {Parent = Preview, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                     
-                    ENV.Create("TextLabel", {Parent = Picker, Text = "Hex", Position = UDim2.new(0,72,0,210), Size = UDim2.new(0,80,0,14), Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, TextSize = 11, BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 101})
-                    local HexBox = ENV.Create("TextBox", {Parent = Picker, BackgroundColor3 = ENV.Library.Theme.Element, Position = UDim2.new(0,72,0,226), Size = UDim2.new(0,90,0,30), Text = "", Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 13, BorderSizePixel = 0, ClearTextOnFocus = false, ZIndex = 101})
-                    ENV.Create("UICorner", {Parent = HexBox, CornerRadius = UDim.new(0,6)})
-                    local HexStroke = ENV.Create("UIStroke", {Parent = HexBox, Color = ENV.Library.Theme.Outline, Thickness = 1})
-                    ENV.Create("UIPadding", {Parent = HexBox, PaddingLeft = UDim.new(0,8)})
-                    HexBox.Focused:Connect(function() ENV.TweenService:Create(HexStroke, TweenInfo.new(0.15), {Color = ENV.Library.AccentColor}):Play() end)
-                    HexBox.FocusLost:Connect(function() ENV.TweenService:Create(HexStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play() end)
+                    _0xd5fe._0x36b7("TextLabel", {Parent = Picker, Text = "Hex", Position = UDim2.new(0,72,0,210), Size = UDim2.new(0,80,0,14), Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, TextSize = 11, BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 101})
+                    local HexBox = _0xd5fe._0x36b7("TextBox", {Parent = Picker, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Position = UDim2.new(0,72,0,226), Size = UDim2.new(0,90,0,30), Text = "", Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 13, BorderSizePixel = 0, ClearTextOnFocus = false, ZIndex = 101})
+                    _0xd5fe._0x36b7("UICorner", {Parent = HexBox, CornerRadius = UDim.new(0,6)})
+                    local HexStroke = _0xd5fe._0x36b7("UIStroke", {Parent = HexBox, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+                    _0xd5fe._0x36b7("UIPadding", {Parent = HexBox, PaddingLeft = UDim.new(0,8)})
+                    HexBox.Focused:Connect(function() _0xd5fe._0xa4bd:Create(HexStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play() end)
+                    HexBox.FocusLost:Connect(function() _0xd5fe._0xa4bd:Create(HexStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() end)
                     
-                    ENV.Create("TextLabel", {Parent = Picker, Text = "RGB", Position = UDim2.new(0,172,0,210), Size = UDim2.new(0,96,0,14), Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, TextSize = 11, BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 101})
-                    local RBox = ENV.Create("TextBox", {Parent = Picker, BackgroundColor3 = ENV.Library.Theme.Element, Position = UDim2.new(0,172,0,226), Size = UDim2.new(0,30,0,30), Text = "255", Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 12, BorderSizePixel = 0, TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 101})
-                    ENV.Create("UICorner", {Parent = RBox, CornerRadius = UDim.new(0,6)})
-                    local RStroke = ENV.Create("UIStroke", {Parent = RBox, Color = ENV.Library.Theme.Outline, Thickness = 1})
-                    local GBox = ENV.Create("TextBox", {Parent = Picker, BackgroundColor3 = ENV.Library.Theme.Element, Position = UDim2.new(0,206,0,226), Size = UDim2.new(0,30,0,30), Text = "255", Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 12, BorderSizePixel = 0, TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 101})
-                    ENV.Create("UICorner", {Parent = GBox, CornerRadius = UDim.new(0,6)})
-                    local GStroke = ENV.Create("UIStroke", {Parent = GBox, Color = ENV.Library.Theme.Outline, Thickness = 1})
-                    local BBox = ENV.Create("TextBox", {Parent = Picker, BackgroundColor3 = ENV.Library.Theme.Element, Position = UDim2.new(0,240,0,226), Size = UDim2.new(0,30,0,30), Text = "255", Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 12, BorderSizePixel = 0, TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 101})
-                    ENV.Create("UICorner", {Parent = BBox, CornerRadius = UDim.new(0,6)})
-                    local BStroke = ENV.Create("UIStroke", {Parent = BBox, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                    _0xd5fe._0x36b7("TextLabel", {Parent = Picker, Text = "RGB", Position = UDim2.new(0,172,0,210), Size = UDim2.new(0,96,0,14), Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, TextSize = 11, BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 101})
+                    local RBox = _0xd5fe._0x36b7("TextBox", {Parent = Picker, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Position = UDim2.new(0,172,0,226), Size = UDim2.new(0,30,0,30), Text = "255", Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 12, BorderSizePixel = 0, TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 101})
+                    _0xd5fe._0x36b7("UICorner", {Parent = RBox, CornerRadius = UDim.new(0,6)})
+                    local RStroke = _0xd5fe._0x36b7("UIStroke", {Parent = RBox, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+                    local GBox = _0xd5fe._0x36b7("TextBox", {Parent = Picker, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Position = UDim2.new(0,206,0,226), Size = UDim2.new(0,30,0,30), Text = "255", Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 12, BorderSizePixel = 0, TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 101})
+                    _0xd5fe._0x36b7("UICorner", {Parent = GBox, CornerRadius = UDim.new(0,6)})
+                    local GStroke = _0xd5fe._0x36b7("UIStroke", {Parent = GBox, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+                    local BBox = _0xd5fe._0x36b7("TextBox", {Parent = Picker, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Position = UDim2.new(0,240,0,226), Size = UDim2.new(0,30,0,30), Text = "255", Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 12, BorderSizePixel = 0, TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 101})
+                    _0xd5fe._0x36b7("UICorner", {Parent = BBox, CornerRadius = UDim.new(0,6)})
+                    local BStroke = _0xd5fe._0x36b7("UIStroke", {Parent = BBox, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                     
-                    RBox.Focused:Connect(function() ENV.TweenService:Create(RStroke, TweenInfo.new(0.15), {Color = Color3.fromRGB(255,100,100)}):Play() end)
-                    RBox.FocusLost:Connect(function() ENV.TweenService:Create(RStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play() end)
-                    GBox.Focused:Connect(function() ENV.TweenService:Create(GStroke, TweenInfo.new(0.15), {Color = Color3.fromRGB(100,255,100)}):Play() end)
-                    GBox.FocusLost:Connect(function() ENV.TweenService:Create(GStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play() end)
-                    BBox.Focused:Connect(function() ENV.TweenService:Create(BStroke, TweenInfo.new(0.15), {Color = Color3.fromRGB(100,100,255)}):Play() end)
-                    BBox.FocusLost:Connect(function() ENV.TweenService:Create(BStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play() end)
+                    RBox.Focused:Connect(function() _0xd5fe._0xa4bd:Create(RStroke, TweenInfo.new(0.15), {Color = Color3.fromRGB(255,100,100)}):Play() end)
+                    RBox.FocusLost:Connect(function() _0xd5fe._0xa4bd:Create(RStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() end)
+                    GBox.Focused:Connect(function() _0xd5fe._0xa4bd:Create(GStroke, TweenInfo.new(0.15), {Color = Color3.fromRGB(100,255,100)}):Play() end)
+                    GBox.FocusLost:Connect(function() _0xd5fe._0xa4bd:Create(GStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() end)
+                    BBox.Focused:Connect(function() _0xd5fe._0xa4bd:Create(BStroke, TweenInfo.new(0.15), {Color = Color3.fromRGB(100,100,255)}):Play() end)
+                    BBox.FocusLost:Connect(function() _0xd5fe._0xa4bd:Create(BStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() end)
                     
-                    local ApplyBtn = ENV.Create("TextButton", {Parent = Picker, Text = "Apply", Position = UDim2.new(0,12,1,-40), Size = UDim2.new(0.5,-18,0,32), BackgroundColor3 = ENV.Library.AccentColor, Font = ENV.Library.FontBold, TextColor3 = ENV.Library.Theme.Text, BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 101})
-                    ENV.Create("UICorner", {Parent = ApplyBtn, CornerRadius = UDim.new(0,6)})
-                    ApplyBtn.MouseEnter:Connect(function() ENV.TweenService:Create(ApplyBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.new(math.min(1, ENV.Library.AccentColor.R+0.1), math.min(1, ENV.Library.AccentColor.G+0.1), math.min(1, ENV.Library.AccentColor.B+0.1))}):Play() end)
-                    ApplyBtn.MouseLeave:Connect(function() ENV.TweenService:Create(ApplyBtn, TweenInfo.new(0.15), {BackgroundColor3 = ENV.Library.AccentColor}):Play() end)
+                    local ApplyBtn = _0xd5fe._0x36b7("TextButton", {Parent = Picker, Text = "Apply", Position = UDim2.new(0,12,1,-40), Size = UDim2.new(0.5,-18,0,32), BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor, Font = _0xd5fe._0x0e5f.FontBold, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 101})
+                    _0xd5fe._0x36b7("UICorner", {Parent = ApplyBtn, CornerRadius = UDim.new(0,6)})
+                    ApplyBtn.MouseEnter:Connect(function() _0xd5fe._0xa4bd:Create(ApplyBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.new(math.min(1, _0xd5fe._0x0e5f.AccentColor.R+0.1), math.min(1, _0xd5fe._0x0e5f.AccentColor.G+0.1), math.min(1, _0xd5fe._0x0e5f.AccentColor.B+0.1))}):Play() end)
+                    ApplyBtn.MouseLeave:Connect(function() _0xd5fe._0xa4bd:Create(ApplyBtn, TweenInfo.new(0.15), {BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play() end)
                     
-                    local ResetBtn = ENV.Create("TextButton", {Parent = Picker, Text = "Reset", Position = UDim2.new(0.5,6,1,-40), Size = UDim2.new(0.5,-18,0,32), BackgroundColor3 = ENV.Library.Theme.Element, Font = ENV.Library.FontBold, TextColor3 = ENV.Library.Theme.Text, BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 101})
-                    ENV.Create("UICorner", {Parent = ResetBtn, CornerRadius = UDim.new(0,6)})
-                    ENV.Create("UIStroke", {Parent = ResetBtn, Color = ENV.Library.Theme.Outline, Thickness = 1})
-                    ResetBtn.MouseEnter:Connect(function() ENV.TweenService:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = ENV.Library.Theme.Outline}):Play() end)
-                    ResetBtn.MouseLeave:Connect(function() ENV.TweenService:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = ENV.Library.Theme.Element}):Play() end)
+                    local ResetBtn = _0xd5fe._0x36b7("TextButton", {Parent = Picker, Text = "Reset", Position = UDim2.new(0.5,6,1,-40), Size = UDim2.new(0.5,-18,0,32), BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Font = _0xd5fe._0x0e5f.FontBold, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 101})
+                    _0xd5fe._0x36b7("UICorner", {Parent = ResetBtn, CornerRadius = UDim.new(0,6)})
+                    _0xd5fe._0x36b7("UIStroke", {Parent = ResetBtn, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+                    ResetBtn.MouseEnter:Connect(function() _0xd5fe._0xa4bd:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Outline}):Play() end)
+                    ResetBtn.MouseLeave:Connect(function() _0xd5fe._0xa4bd:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element}):Play() end)
                     
                     local function ColorToHex(color)
                         return string.format("#%02X%02X%02X", math.floor(color.R*255), math.floor(color.G*255), math.floor(color.B*255))
@@ -1665,7 +1665,7 @@ function ENV.Library:CreateWindow(Settings)
                             UpdateColor()
                         end
                     end)
-                    local svConn = ENV.InputService.InputChanged:Connect(function(input)
+                    local svConn = _0xd5fe._0x8efd.InputChanged:Connect(function(input)
                         if SVDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
                             local inputPos = Vector2.new(input.Position.X, input.Position.Y)
                             local pos = (inputPos - SVPicker.AbsolutePosition) / SVPicker.AbsoluteSize
@@ -1684,7 +1684,7 @@ function ENV.Library:CreateWindow(Settings)
                             UpdateColor()
                         end
                     end)
-                    local hueConn = ENV.InputService.InputChanged:Connect(function(input)
+                    local hueConn = _0xd5fe._0x8efd.InputChanged:Connect(function(input)
                         if HueDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
                             local pos = (input.Position.X - HuePicker.AbsolutePosition.X) / HuePicker.AbsoluteSize.X
                             CurrentColor.H = math.clamp(pos, 0, 1)
@@ -1692,7 +1692,7 @@ function ENV.Library:CreateWindow(Settings)
                         end
                     end)
                     
-                    local endConn = ENV.InputService.InputEnded:Connect(function(input)
+                    local endConn = _0xd5fe._0x8efd.InputEnded:Connect(function(input)
                         if input.UserInputType == Enum.UserInputType.MouseButton1 then
                             SVDragging = false
                             HueDragging = false
@@ -1723,17 +1723,17 @@ function ENV.Library:CreateWindow(Settings)
                     end,
                     Get = function(self) return Color3.fromHSV(CurrentColor.H, CurrentColor.S, CurrentColor.V) end
                 }
-                ENV.Library.Options[Text] = ColorPickerObj
+                _0xd5fe._0x0e5f.Options[Text] = ColorPickerObj
                 return ColorPickerObj
             end
             
             function Group:AddKeybind(Text, Default, Callback)
-                local Frame = ENV.Create("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,26)})
-                local Label = ENV.Create("TextLabel", {Parent = Frame, Text = Text, Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, Size = UDim2.new(1,-75,1,0), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
+                local Frame = _0xd5fe._0x36b7("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,26)})
+                local Label = _0xd5fe._0x36b7("TextLabel", {Parent = Frame, Text = Text, Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, Size = UDim2.new(1,-75,1,0), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
                 
-                local Btn = ENV.Create("TextButton", {Parent = Frame, BackgroundColor3 = ENV.Library.Theme.Element, Size = UDim2.new(0,70,0,22), Position = UDim2.new(1,-70,0,2), Text = (Default and Default.Name) or "None", Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 11, AutoButtonColor = false, BorderSizePixel = 0})
-                ENV.Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0,5)})
-                local BtnStroke = ENV.Create("UIStroke", {Parent = Btn, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                local Btn = _0xd5fe._0x36b7("TextButton", {Parent = Frame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Size = UDim2.new(0,70,0,22), Position = UDim2.new(1,-70,0,2), Text = (Default and Default.Name) or "None", Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 11, AutoButtonColor = false, BorderSizePixel = 0})
+                _0xd5fe._0x36b7("UICorner", {Parent = Btn, CornerRadius = UDim.new(0,5)})
+                local BtnStroke = _0xd5fe._0x36b7("UIStroke", {Parent = Btn, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                 
                 local KeybindObj = {
                     Type = "Keybind",
@@ -1741,26 +1741,26 @@ function ENV.Library:CreateWindow(Settings)
                     Set = function(self, key)
                         self.Value = key
                         Btn.Text = key and key.Name or "None"
-                        -- Update ENV.Library.ToggleKey if this is the menu toggle keybind
+                        -- Update _0xd5fe._0x0e5f.ToggleKey if this is the menu toggle keybind
                         if Text:lower():find("toggle") or Text:lower():find("menu") then
-                            ENV.Library.ToggleKey = key
+                            _0xd5fe._0x0e5f.ToggleKey = key
                         end
                         pcall(Callback, key)
                     end
                 }
                 
                 Btn.MouseEnter:Connect(function() 
-                    ENV.TweenService:Create(BtnStroke, TweenInfo.new(0.15), {Color = ENV.Library.AccentColor}):Play()
-                    ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.Text}):Play()
+                    _0xd5fe._0xa4bd:Create(BtnStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play()
+                    _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play()
                 end)
                 Btn.MouseLeave:Connect(function() 
-                    ENV.TweenService:Create(BtnStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play()
-                    ENV.TweenService:Create(Label, TweenInfo.new(0.15), {TextColor3 = ENV.Library.Theme.TextDim}):Play()
+                    _0xd5fe._0xa4bd:Create(BtnStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play()
+                    _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.15), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
                 end)
                 
                 Btn.MouseButton1Click:Connect(function()
                     -- Create modal overlay with dark purple tint
-                    local Modal = ENV.Create("Frame", {
+                    local Modal = _0xd5fe._0x36b7("Frame", {
                         Parent = ScreenGui,
                         BackgroundColor3 = Color3.fromRGB(30, 20, 50),
                         BackgroundTransparency = 0.3,
@@ -1768,42 +1768,42 @@ function ENV.Library:CreateWindow(Settings)
                         ZIndex = 5000
                     })
                     
-                    local ModalBox = ENV.Create("Frame", {
+                    local ModalBox = _0xd5fe._0x36b7("Frame", {
                         Parent = Modal,
-                        BackgroundColor3 = ENV.Library.Theme.Section,
+                        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Section,
                         Position = UDim2.new(0.5, 0, 0.5, 0),
                         AnchorPoint = Vector2.new(0.5, 0.5),
                         Size = UDim2.new(0, 280, 0, 140),
                         ZIndex = 5001
                     })
-                    ENV.Create("UICorner", {Parent = ModalBox, CornerRadius = UDim.new(0, 8)})
-                    ENV.Create("UIStroke", {Parent = ModalBox, Color = ENV.Library.AccentColor, Thickness = 2})
+                    _0xd5fe._0x36b7("UICorner", {Parent = ModalBox, CornerRadius = UDim.new(0, 8)})
+                    _0xd5fe._0x36b7("UIStroke", {Parent = ModalBox, Color = _0xd5fe._0x0e5f.AccentColor, Thickness = 2})
                     
-                    local ModalTitle = ENV.Create("TextLabel", {
+                    local ModalTitle = _0xd5fe._0x36b7("TextLabel", {
                         Parent = ModalBox,
                         BackgroundTransparency = 1,
                         Position = UDim2.new(0, 0, 0, 15),
                         Size = UDim2.new(1, 0, 0, 25),
                         Text = "Please Press Your Keybind",
-                        Font = ENV.Library.FontBold,
-                        TextColor3 = ENV.Library.Theme.Text,
+                        Font = _0xd5fe._0x0e5f.FontBold,
+                        TextColor3 = _0xd5fe._0x0e5f.Theme.Text,
                         TextSize = 16,
                         ZIndex = 5002
                     })
                     
-                    local ModalStatus = ENV.Create("TextLabel", {
+                    local ModalStatus = _0xd5fe._0x36b7("TextLabel", {
                         Parent = ModalBox,
                         BackgroundTransparency = 1,
                         Position = UDim2.new(0, 0, 0, 45),
                         Size = UDim2.new(1, 0, 0, 20),
                         Text = "Waiting for input...",
-                        Font = ENV.Library.Font,
-                        TextColor3 = ENV.Library.Theme.TextDim,
+                        Font = _0xd5fe._0x0e5f.Font,
+                        TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim,
                         TextSize = 14,
                         ZIndex = 5002
                     })
                     
-                    local ButtonContainer = ENV.Create("Frame", {
+                    local ButtonContainer = _0xd5fe._0x36b7("Frame", {
                         Parent = ModalBox,
                         BackgroundTransparency = 1,
                         Position = UDim2.new(0, 20, 1, -50),
@@ -1812,38 +1812,38 @@ function ENV.Library:CreateWindow(Settings)
                         Visible = false
                     })
                     
-                    local SaveBtn = ENV.Create("TextButton", {
+                    local SaveBtn = _0xd5fe._0x36b7("TextButton", {
                         Parent = ButtonContainer,
-                        BackgroundColor3 = ENV.Library.AccentColor,
+                        BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor,
                         Position = UDim2.new(0, 0, 0, 0),
                         Size = UDim2.new(0.48, 0, 1, 0),
                         Text = "Save",
-                        Font = ENV.Library.FontBold,
-                        TextColor3 = ENV.Library.Theme.Text,
+                        Font = _0xd5fe._0x0e5f.FontBold,
+                        TextColor3 = _0xd5fe._0x0e5f.Theme.Text,
                         TextSize = 14,
                         AutoButtonColor = false,
                         ZIndex = 5003
                     })
-                    ENV.Create("UICorner", {Parent = SaveBtn, CornerRadius = UDim.new(0, 6)})
+                    _0xd5fe._0x36b7("UICorner", {Parent = SaveBtn, CornerRadius = UDim.new(0, 6)})
                     
-                    local ResetBtn = ENV.Create("TextButton", {
+                    local ResetBtn = _0xd5fe._0x36b7("TextButton", {
                         Parent = ButtonContainer,
-                        BackgroundColor3 = ENV.Library.Theme.Element,
+                        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element,
                         Position = UDim2.new(0.52, 0, 0, 0),
                         Size = UDim2.new(0.48, 0, 1, 0),
                         Text = "Reset",
-                        Font = ENV.Library.FontBold,
-                        TextColor3 = ENV.Library.Theme.Text,
+                        Font = _0xd5fe._0x0e5f.FontBold,
+                        TextColor3 = _0xd5fe._0x0e5f.Theme.Text,
                         TextSize = 14,
                         AutoButtonColor = false,
                         ZIndex = 5003
                     })
-                    ENV.Create("UICorner", {Parent = ResetBtn, CornerRadius = UDim.new(0, 6)})
-                    ENV.Create("UIStroke", {Parent = ResetBtn, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                    _0xd5fe._0x36b7("UICorner", {Parent = ResetBtn, CornerRadius = UDim.new(0, 6)})
+                    _0xd5fe._0x36b7("UIStroke", {Parent = ResetBtn, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                     
                     local pendingKey = nil
                     local con
-                    con = ENV.InputService.InputBegan:Connect(function(input)
+                    con = _0xd5fe._0x8efd.InputBegan:Connect(function(input)
                         if input.UserInputType == Enum.UserInputType.Keyboard then
                             local key = input.KeyCode
                             if key == Enum.KeyCode.Unknown or key == Enum.KeyCode.Escape then 
@@ -1854,7 +1854,7 @@ function ENV.Library:CreateWindow(Settings)
                             pendingKey = key
                             ModalTitle.Text = "Keybind Set to " .. key.Name
                             ModalStatus.Text = "Press Save to confirm or Reset to remove"
-                            ModalStatus.TextColor3 = ENV.Library.AccentColor
+                            ModalStatus.TextColor3 = _0xd5fe._0x0e5f.AccentColor
                             ButtonContainer.Visible = true
                             con:Disconnect()
                         end
@@ -1865,7 +1865,7 @@ function ENV.Library:CreateWindow(Settings)
                             KeybindObj.Value = pendingKey
                             Btn.Text = pendingKey.Name
                             if Text:lower():find("toggle") or Text:lower():find("menu") then
-                                ENV.Library.ToggleKey = pendingKey
+                                _0xd5fe._0x0e5f.ToggleKey = pendingKey
                             end
                             pcall(Callback, pendingKey)
                         end
@@ -1876,53 +1876,53 @@ function ENV.Library:CreateWindow(Settings)
                         KeybindObj.Value = nil
                         Btn.Text = "None"
                         if Text:lower():find("toggle") or Text:lower():find("menu") then
-                            ENV.Library.ToggleKey = nil
+                            _0xd5fe._0x0e5f.ToggleKey = nil
                         end
                         pcall(Callback, nil)
                         Modal:Destroy()
                     end)
                     
                     SaveBtn.MouseEnter:Connect(function()
-                        ENV.TweenService:Create(SaveBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(116, 96, 255)}):Play()
+                        _0xd5fe._0xa4bd:Create(SaveBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(116, 96, 255)}):Play()
                     end)
                     SaveBtn.MouseLeave:Connect(function()
-                        ENV.TweenService:Create(SaveBtn, TweenInfo.new(0.15), {BackgroundColor3 = ENV.Library.AccentColor}):Play()
+                        _0xd5fe._0xa4bd:Create(SaveBtn, TweenInfo.new(0.15), {BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play()
                     end)
                     ResetBtn.MouseEnter:Connect(function()
-                        ENV.TweenService:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = ENV.Library.Theme.Error}):Play()
+                        _0xd5fe._0xa4bd:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Error}):Play()
                     end)
                     ResetBtn.MouseLeave:Connect(function()
-                        ENV.TweenService:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = ENV.Library.Theme.Element}):Play()
+                        _0xd5fe._0xa4bd:Create(ResetBtn, TweenInfo.new(0.15), {BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element}):Play()
                     end)
                 end)
                 
                 -- Set initial toggle key if this is the menu toggle keybind
                 if (Text:lower():find("toggle") or Text:lower():find("menu")) and Default then
-                    ENV.Library.ToggleKey = Default
+                    _0xd5fe._0x0e5f.ToggleKey = Default
                 end
                 
-                ENV.Library.Options[Text] = KeybindObj
+                _0xd5fe._0x0e5f.Options[Text] = KeybindObj
                 return KeybindObj
             end
             
             function Group:AddButton(Text, Callback)
-                local Btn = ENV.Create("TextButton", {Parent = Container, BackgroundColor3 = ENV.Library.Theme.Element, Size = UDim2.new(1,0,0,30), Text = Text, Font = ENV.Library.FontBold, TextColor3 = ENV.Library.Theme.Text, TextSize = 13, AutoButtonColor = false, BorderSizePixel = 0})
-                ENV.Create("UICorner", {Parent = Btn, CornerRadius = UDim.new(0,6)})
-                ENV.Create("UIStroke", {Parent = Btn, Color = ENV.Library.Theme.Outline, Thickness = 1})
+                local Btn = _0xd5fe._0x36b7("TextButton", {Parent = Container, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Size = UDim2.new(1,0,0,30), Text = Text, Font = _0xd5fe._0x0e5f.FontBold, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 13, AutoButtonColor = false, BorderSizePixel = 0})
+                _0xd5fe._0x36b7("UICorner", {Parent = Btn, CornerRadius = UDim.new(0,6)})
+                _0xd5fe._0x36b7("UIStroke", {Parent = Btn, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                 
-                Btn.MouseEnter:Connect(function() ENV.TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = ENV.Library.AccentColor}):Play() end)
-                Btn.MouseLeave:Connect(function() ENV.TweenService:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = ENV.Library.Theme.Element}):Play() end)
+                Btn.MouseEnter:Connect(function() _0xd5fe._0xa4bd:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play() end)
+                Btn.MouseLeave:Connect(function() _0xd5fe._0xa4bd:Create(Btn, TweenInfo.new(0.2), {BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element}):Play() end)
                 Btn.MouseButton1Click:Connect(function() pcall(Callback) end)
             end
             
             function Group:AddInput(Text, Placeholder, Callback)
-                local Frame = ENV.Create("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,50)})
-                ENV.Create("TextLabel", {Parent = Frame, Text = Text, Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, Size = UDim2.new(1,0,0,18), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
+                local Frame = _0xd5fe._0x36b7("Frame", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,50)})
+                _0xd5fe._0x36b7("TextLabel", {Parent = Frame, Text = Text, Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, Size = UDim2.new(1,0,0,18), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13})
                 
-                local Box = ENV.Create("TextBox", {Parent = Frame, BackgroundColor3 = ENV.Library.Theme.Element, Position = UDim2.new(0,0,0,22), Size = UDim2.new(1,0,0,26), PlaceholderText = Placeholder or "", Text = "", Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, BorderSizePixel = 0, ClearTextOnFocus = false})
-                ENV.Create("UICorner", {Parent = Box, CornerRadius = UDim.new(0,6)})
-                local InputStroke = ENV.Create("UIStroke", {Parent = Box, Color = ENV.Library.Theme.Outline, Thickness = 1})
-                ENV.Create("UIPadding", {Parent = Box, PaddingLeft = UDim.new(0,10)})
+                local Box = _0xd5fe._0x36b7("TextBox", {Parent = Frame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Position = UDim2.new(0,0,0,22), Size = UDim2.new(1,0,0,26), PlaceholderText = Placeholder or "", Text = "", Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, BorderSizePixel = 0, ClearTextOnFocus = false})
+                _0xd5fe._0x36b7("UICorner", {Parent = Box, CornerRadius = UDim.new(0,6)})
+                local InputStroke = _0xd5fe._0x36b7("UIStroke", {Parent = Box, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+                _0xd5fe._0x36b7("UIPadding", {Parent = Box, PaddingLeft = UDim.new(0,10)})
                 
                 local InputObj = {
                     Type = "Input",
@@ -1934,19 +1934,19 @@ function ENV.Library:CreateWindow(Settings)
                     end
                 }
                 
-                Box.Focused:Connect(function() ENV.TweenService:Create(InputStroke, TweenInfo.new(0.15), {Color = ENV.Library.AccentColor}):Play() end)
+                Box.Focused:Connect(function() _0xd5fe._0xa4bd:Create(InputStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play() end)
                 Box.FocusLost:Connect(function(enter) 
-                    ENV.TweenService:Create(InputStroke, TweenInfo.new(0.15), {Color = ENV.Library.Theme.Outline}):Play() 
+                    _0xd5fe._0xa4bd:Create(InputStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() 
                     InputObj.Value = Box.Text
                     if enter then pcall(Callback, Box.Text) end 
                 end)
                 
-                ENV.Library.Options[Text] = InputObj
+                _0xd5fe._0x0e5f.Options[Text] = InputObj
                 return InputObj
             end
             
             function Group:AddLabel(Text)
-                local Lbl = ENV.Create("TextLabel", {Parent = Container, Text = Text, Font = ENV.Library.Font, TextColor3 = ENV.Library.Theme.TextDim, Size = UDim2.new(1,0,0,18), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13, TextWrapped = true})
+                local Lbl = _0xd5fe._0x36b7("TextLabel", {Parent = Container, Text = Text, Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, Size = UDim2.new(1,0,0,18), BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left, TextSize = 13, TextWrapped = true})
                 return {Set = function(self, txt) Lbl.Text = txt end}
             end
             
@@ -1965,9 +1965,9 @@ end
 -- Config Manager System (Fluent-style)
 local HttpService = game:GetService("HttpService")
 
-ENV.Library.Options = {}
+_0xd5fe._0x0e5f.Options = {}
 
-ENV.Library.SaveManager = {
+_0xd5fe._0x0e5f.SaveManager = {
     Folder = "UILibraryConfigs",
     Ignore = {},
     Parser = {
@@ -1976,8 +1976,8 @@ ENV.Library.SaveManager = {
                 return { type = "Toggle", idx = idx, value = object.Value }
             end,
             Load = function(idx, data)
-                if ENV.Library.Options[idx] and ENV.Library.Options[idx].Set then
-                    ENV.Library.Options[idx]:Set(data.value)
+                if _0xd5fe._0x0e5f.Options[idx] and _0xd5fe._0x0e5f.Options[idx].Set then
+                    _0xd5fe._0x0e5f.Options[idx]:Set(data.value)
                 end
             end
         },
@@ -1986,8 +1986,8 @@ ENV.Library.SaveManager = {
                 return { type = "Slider", idx = idx, value = object.Value }
             end,
             Load = function(idx, data)
-                if ENV.Library.Options[idx] and ENV.Library.Options[idx].Set then
-                    ENV.Library.Options[idx]:Set(data.value)
+                if _0xd5fe._0x0e5f.Options[idx] and _0xd5fe._0x0e5f.Options[idx].Set then
+                    _0xd5fe._0x0e5f.Options[idx]:Set(data.value)
                 end
             end
         },
@@ -1996,8 +1996,8 @@ ENV.Library.SaveManager = {
                 return { type = "Dropdown", idx = idx, value = object.Value }
             end,
             Load = function(idx, data)
-                if ENV.Library.Options[idx] and ENV.Library.Options[idx].Set then
-                    ENV.Library.Options[idx]:Set(data.value)
+                if _0xd5fe._0x0e5f.Options[idx] and _0xd5fe._0x0e5f.Options[idx].Set then
+                    _0xd5fe._0x0e5f.Options[idx]:Set(data.value)
                 end
             end
         },
@@ -2007,8 +2007,8 @@ ENV.Library.SaveManager = {
                 return { type = "ColorPicker", idx = idx, value = {c.R, c.G, c.B} }
             end,
             Load = function(idx, data)
-                if ENV.Library.Options[idx] and ENV.Library.Options[idx].Set then
-                    ENV.Library.Options[idx]:Set(Color3.new(data.value[1], data.value[2], data.value[3]))
+                if _0xd5fe._0x0e5f.Options[idx] and _0xd5fe._0x0e5f.Options[idx].Set then
+                    _0xd5fe._0x0e5f.Options[idx]:Set(Color3.new(data.value[1], data.value[2], data.value[3]))
                 end
             end
         },
@@ -2017,8 +2017,8 @@ ENV.Library.SaveManager = {
                 return { type = "Keybind", idx = idx, value = object.Value and object.Value.Name or "None" }
             end,
             Load = function(idx, data)
-                if ENV.Library.Options[idx] and ENV.Library.Options[idx].Set and data.value ~= "None" then
-                    ENV.Library.Options[idx]:Set(Enum.KeyCode[data.value])
+                if _0xd5fe._0x0e5f.Options[idx] and _0xd5fe._0x0e5f.Options[idx].Set and data.value ~= "None" then
+                    _0xd5fe._0x0e5f.Options[idx]:Set(Enum.KeyCode[data.value])
                 end
             end
         },
@@ -2027,8 +2027,8 @@ ENV.Library.SaveManager = {
                 return { type = "Input", idx = idx, value = object.Value }
             end,
             Load = function(idx, data)
-                if ENV.Library.Options[idx] and ENV.Library.Options[idx].Set then
-                    ENV.Library.Options[idx]:Set(data.value)
+                if _0xd5fe._0x0e5f.Options[idx] and _0xd5fe._0x0e5f.Options[idx].Set then
+                    _0xd5fe._0x0e5f.Options[idx]:Set(data.value)
                 end
             end
         },
@@ -2046,27 +2046,27 @@ ENV.Library.SaveManager = {
                 return { type = "MultiDropdown", idx = idx, value = selectedArray }
             end,
             Load = function(idx, data)
-                if ENV.Library.Options[idx] and ENV.Library.Options[idx].Set then
+                if _0xd5fe._0x0e5f.Options[idx] and _0xd5fe._0x0e5f.Options[idx].Set then
                     -- data.value is already an array, Set expects an array
-                    ENV.Library.Options[idx]:Set(data.value or {})
+                    _0xd5fe._0x0e5f.Options[idx]:Set(data.value or {})
                 end
             end
         }
     }
 }
 
-function ENV.Library.SaveManager:SetIgnoreIndexes(list)
+function _0xd5fe._0x0e5f.SaveManager:SetIgnoreIndexes(list)
     for _, key in next, list do
         self.Ignore[key] = true
     end
 end
 
-function ENV.Library.SaveManager:SetFolder(folder)
+function _0xd5fe._0x0e5f.SaveManager:SetFolder(folder)
     self.Folder = folder
     self:BuildFolderTree()
 end
 
-function ENV.Library.SaveManager:BuildFolderTree()
+function _0xd5fe._0x0e5f.SaveManager:BuildFolderTree()
     local paths = { self.Folder, self.Folder .. "/settings" }
     for i = 1, #paths do
         if not isfolder(paths[i]) then
@@ -2075,7 +2075,7 @@ function ENV.Library.SaveManager:BuildFolderTree()
     end
 end
 
-function ENV.Library.SaveManager:RefreshConfigList()
+function _0xd5fe._0x0e5f.SaveManager:RefreshConfigList()
     local list = listfiles(self.Folder .. "/settings")
     local out = {}
     for i = 1, #list do
@@ -2090,7 +2090,7 @@ function ENV.Library.SaveManager:RefreshConfigList()
     return out
 end
 
-function ENV.Library.SaveManager:Save(name)
+function _0xd5fe._0x0e5f.SaveManager:Save(name)
     if not name or name:gsub(" ", "") == "" then
         return false, "invalid name"
     end
@@ -2100,7 +2100,7 @@ function ENV.Library.SaveManager:Save(name)
     
     local data = { objects = {} }
     
-    for idx, option in next, ENV.Library.Options do
+    for idx, option in next, _0xd5fe._0x0e5f.Options do
         if not self.Parser[option.Type] then continue end
         if self.Ignore[idx] then continue end
         table.insert(data.objects, self.Parser[option.Type].Save(idx, option))
@@ -2115,7 +2115,7 @@ function ENV.Library.SaveManager:Save(name)
     return true
 end
 
-function ENV.Library.SaveManager:Load(name)
+function _0xd5fe._0x0e5f.SaveManager:Load(name)
     if not name or name:gsub(" ", "") == "" then
         return false, "invalid name"
     end
@@ -2145,7 +2145,7 @@ function ENV.Library.SaveManager:Load(name)
     local function loadOption(option)
         local idx = option.idx
         local optType = option.type
-        local optionObj = ENV.Library.Options[idx]
+        local optionObj = _0xd5fe._0x0e5f.Options[idx]
         
         if optionObj and optionObj.Set then
             local ok, err = pcall(function()
@@ -2191,7 +2191,7 @@ function ENV.Library.SaveManager:Load(name)
     return true, loadedCount
 end
 
-function ENV.Library.SaveManager:Delete(name)
+function _0xd5fe._0x0e5f.SaveManager:Delete(name)
     local path = self.Folder .. "/settings/" .. name .. ".json"
     if isfile(path) then
         delfile(path)
@@ -2200,16 +2200,16 @@ function ENV.Library.SaveManager:Delete(name)
     return false
 end
 
-function ENV.Library.SaveManager:LoadAutoloadConfig()
+function _0xd5fe._0x0e5f.SaveManager:LoadAutoloadConfig()
     local autoloadPath = self.Folder .. "/settings/autoload.txt"
     if isfile(autoloadPath) then
         local name = readfile(autoloadPath)
         if name and name ~= "" then
             local success, count = self:Load(name)
             if success then
-                ENV.Library:Notify("Config", "Auto-loaded: " .. name .. " (" .. tostring(count or 0) .. " settings)", 3, "folder")
+                _0xd5fe._0x0e5f:Notify("Config", "Auto-loaded: " .. name .. " (" .. tostring(count or 0) .. " settings)", 3, "folder")
             else
-                ENV.Library:Notify("Config", "Failed to auto-load: " .. name, 3, "error")
+                _0xd5fe._0x0e5f:Notify("Config", "Failed to auto-load: " .. name, 3, "error")
             end
             return true
         end
@@ -2217,7 +2217,7 @@ function ENV.Library.SaveManager:LoadAutoloadConfig()
     return false
 end
 
-function ENV.Library.SaveManager:GetAutoloadName()
+function _0xd5fe._0x0e5f.SaveManager:GetAutoloadName()
     local autoloadPath = self.Folder .. "/settings/autoload.txt"
     if isfile(autoloadPath) then
         local name = readfile(autoloadPath)
@@ -2228,7 +2228,7 @@ function ENV.Library.SaveManager:GetAutoloadName()
     return "None"
 end
 
-function ENV.Library.SaveManager:BuildConfigSection(tab)
+function _0xd5fe._0x0e5f.SaveManager:BuildConfigSection(tab)
     local ConfigGroup = tab:AddRightGroupbox("Configuration")
     
     local configNameValue = ""
@@ -2251,15 +2251,15 @@ function ENV.Library.SaveManager:BuildConfigSection(tab)
     ConfigGroup:AddButton("Create Config", function()
         local name = configNameValue
         if not name or name:gsub(" ", "") == "" then
-            return ENV.Library:Notify("Config", "Enter a config name", 3, "error")
+            return _0xd5fe._0x0e5f:Notify("Config", "Enter a config name", 3, "error")
         end
         
         local success, err = self:Save(name)
         if not success then
-            return ENV.Library:Notify("Config", "Failed to save: " .. (err or "unknown"), 3, "error")
+            return _0xd5fe._0x0e5f:Notify("Config", "Failed to save: " .. (err or "unknown"), 3, "error")
         end
         
-        ENV.Library:Notify("Config", "Created: " .. name, 3, "folder")
+        _0xd5fe._0x0e5f:Notify("Config", "Created: " .. name, 3, "folder")
         
         if dropdownRef and dropdownRef.Refresh then
             dropdownRef:Refresh(self:RefreshConfigList())
@@ -2268,43 +2268,43 @@ function ENV.Library.SaveManager:BuildConfigSection(tab)
     
     ConfigGroup:AddButton("Load Config", function()
         if not selectedConfig or selectedConfig == "" then
-            return ENV.Library:Notify("Config", "Select a config first", 3, "error")
+            return _0xd5fe._0x0e5f:Notify("Config", "Select a config first", 3, "error")
         end
         
         local success, err = self:Load(selectedConfig)
         if not success then
-            return ENV.Library:Notify("Config", "Failed to load: " .. (err or "unknown"), 3, "error")
+            return _0xd5fe._0x0e5f:Notify("Config", "Failed to load: " .. (err or "unknown"), 3, "error")
         end
         
-        ENV.Library:Notify("Config", "Loaded: " .. selectedConfig, 3, "folder")
+        _0xd5fe._0x0e5f:Notify("Config", "Loaded: " .. selectedConfig, 3, "folder")
     end)
     
     ConfigGroup:AddButton("Overwrite Config", function()
         if not selectedConfig or selectedConfig == "" then
-            return ENV.Library:Notify("Config", "Select a config first", 3, "error")
+            return _0xd5fe._0x0e5f:Notify("Config", "Select a config first", 3, "error")
         end
         
         local success, err = self:Save(selectedConfig)
         if not success then
-            return ENV.Library:Notify("Config", "Failed to save: " .. (err or "unknown"), 3, "error")
+            return _0xd5fe._0x0e5f:Notify("Config", "Failed to save: " .. (err or "unknown"), 3, "error")
         end
         
-        ENV.Library:Notify("Config", "Overwrote: " .. selectedConfig, 3, "folder")
+        _0xd5fe._0x0e5f:Notify("Config", "Overwrote: " .. selectedConfig, 3, "folder")
     end)
     
     ConfigGroup:AddButton("Delete Config", function()
         if not selectedConfig or selectedConfig == "" then
-            return ENV.Library:Notify("Config", "Select a config first", 3, "error")
+            return _0xd5fe._0x0e5f:Notify("Config", "Select a config first", 3, "error")
         end
         
         if self:Delete(selectedConfig) then
-            ENV.Library:Notify("Config", "Deleted: " .. selectedConfig, 3, "trash")
+            _0xd5fe._0x0e5f:Notify("Config", "Deleted: " .. selectedConfig, 3, "trash")
             selectedConfig = ""
             if dropdownRef and dropdownRef.Refresh then
                 dropdownRef:Refresh(self:RefreshConfigList())
             end
         else
-            ENV.Library:Notify("Config", "Failed to delete", 3, "error")
+            _0xd5fe._0x0e5f:Notify("Config", "Failed to delete", 3, "error")
         end
     end)
     
@@ -2312,23 +2312,23 @@ function ENV.Library.SaveManager:BuildConfigSection(tab)
         if dropdownRef and dropdownRef.Refresh then
             dropdownRef:Refresh(self:RefreshConfigList())
         end
-        ENV.Library:Notify("Config", "Refreshed config list", 2, "refresh")
+        _0xd5fe._0x0e5f:Notify("Config", "Refreshed config list", 2, "refresh")
     end)
     
     ConfigGroup:AddButton("Set as Auto-Load", function()
         if not selectedConfig or selectedConfig == "" then
-            return ENV.Library:Notify("Config", "Select a config first", 3, "error")
+            return _0xd5fe._0x0e5f:Notify("Config", "Select a config first", 3, "error")
         end
         
         self:BuildFolderTree()
         writefile(self.Folder .. "/settings/autoload.txt", selectedConfig)
         autoloadLabel:Set("Current Auto Load: " .. selectedConfig)
-        ENV.Library:Notify("Config", "Auto-load set: " .. selectedConfig, 3, "folder")
+        _0xd5fe._0x0e5f:Notify("Config", "Auto-load set: " .. selectedConfig, 3, "folder")
     end)
     
     self:SetIgnoreIndexes({"SaveManager_ConfigName", "SaveManager_ConfigList"})
 end
 
-ENV.Library.SaveManager:BuildFolderTree()
+_0xd5fe._0x0e5f.SaveManager:BuildFolderTree()
 
-return ENV.Library
+return _0xd5fe._0x0e5f
