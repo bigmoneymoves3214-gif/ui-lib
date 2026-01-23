@@ -633,12 +633,72 @@ function _0xd5fe._0x0e5f:CreateWindow(Settings)
     })
     _0xd5fe._0x36b7("UICorner", {Parent = CursorDot, CornerRadius = UDim.new(1, 0)})
     
+    -- Tooltip Frame (follows mouse on hover)
+    local Tooltip = _0xd5fe._0x36b7("Frame", {
+        Parent = ScreenGui,
+        Name = "Tooltip",
+        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Section,
+        Size = UDim2.new(0, 200, 0, 32),
+        AutomaticSize = Enum.AutomaticSize.XY,
+        ZIndex = 10000,
+        Visible = false,
+        BorderSizePixel = 0
+    })
+    _0xd5fe._0x36b7("UICorner", {Parent = Tooltip, CornerRadius = UDim.new(0, 6)})
+    _0xd5fe._0x36b7("UIPadding", {Parent = Tooltip, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8)})
+    
+    local TooltipStroke = _0xd5fe._0x36b7("UIStroke", {Parent = Tooltip, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+    
+    local TooltipIcon = _0xd5fe._0x36b7("ImageLabel", {
+        Parent = Tooltip,
+        Name = "Icon",
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 16, 0, 16),
+        Position = UDim2.new(0, 0, 0, 0),
+        Image = _0xd5fe._0x0e5f.Icons.info,
+        ImageColor3 = Color3.fromRGB(59, 130, 246),
+        ZIndex = 10001
+    })
+    
+    local TooltipText = _0xd5fe._0x36b7("TextLabel", {
+        Parent = Tooltip,
+        Name = "Text",
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 22, 0, 0),
+        Size = UDim2.new(0, 0, 0, 16),
+        AutomaticSize = Enum.AutomaticSize.X,
+        Text = "",
+        Font = _0xd5fe._0x0e5f.Font,
+        TextColor3 = _0xd5fe._0x0e5f.Theme.Text,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 10001
+    })
+    
+    _0xd5fe._0x0e5f.Tooltip = Tooltip
+    _0xd5fe._0x0e5f.TooltipIcon = TooltipIcon
+    _0xd5fe._0x0e5f.TooltipText = TooltipText
+    _0xd5fe._0x0e5f.TooltipStroke = TooltipStroke
+    
     _0xd5fe._0x8efd.MouseIconEnabled = false
     
     local cursorConn = game:GetService("RunService").RenderStepped:Connect(function()
+        -- Only update cursor when UI is visible to save FPS
+        if not _0xd5fe._0x0e5f.Open then
+            CustomCursor.Visible = false
+            CursorDot.Visible = false
+            return
+        end
+        
+        CustomCursor.Visible = true
+        CursorDot.Visible = true
         local mousePos = _0xd5fe._0x8efd:GetMouseLocation()
         CustomCursor.Position = UDim2.new(0, mousePos.X, 0, mousePos.Y)
         CursorDot.Position = UDim2.new(0, mousePos.X - 3, 0, mousePos.Y - 3)
+        -- Update tooltip position to follow mouse
+        if Tooltip.Visible then
+            Tooltip.Position = UDim2.new(0, mousePos.X + 15, 0, mousePos.Y + 15)
+        end
     end)
     
     -- Store cursor connection for cleanup
@@ -1103,18 +1163,47 @@ function _0xd5fe._0x0e5f:CreateWindow(Settings)
 
             local Group = {}
             
-            function Group:AddToggle(Text, Default, Callback)
+            function Group:AddToggle(Text, Default, Callback, TooltipOptions)
                 local Frame = _0xd5fe._0x36b7("TextButton", {Parent = Container, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,22), Text = "", AutoButtonColor = false})
                 local Label = _0xd5fe._0x36b7("TextLabel", {Parent = Frame, BackgroundTransparency = 1, Text = Text, Font = _0xd5fe._0x0e5f.Font, TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim, TextSize = 13, TextXAlignment=Enum.TextXAlignment.Left, Size = UDim2.new(1,-45,1,0)})
                 
-                local Check = _0xd5fe._0x36b7("Frame", {Parent = Frame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Size = UDim2.new(0,20,0,20), Position = UDim2.new(1,-20,0,1), BorderSizePixel = 0})
-                _0xd5fe._0x36b7("UICorner", {Parent = Check, CornerRadius = UDim.new(0, 5)})
-                local CheckStroke = _0xd5fe._0x36b7("UIStroke", {Parent = Check, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+                -- Toggle switch (pill shape)
+                local ToggleTrack = _0xd5fe._0x36b7("Frame", {Parent = Frame, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element, Size = UDim2.new(0,36,0,18), Position = UDim2.new(1,-36,0,2), BorderSizePixel = 0})
+                _0xd5fe._0x36b7("UICorner", {Parent = ToggleTrack, CornerRadius = UDim.new(1, 0)})
+                local TrackStroke = _0xd5fe._0x36b7("UIStroke", {Parent = ToggleTrack, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
                 
-                local Checkmark = _0xd5fe._0x36b7("TextLabel", {Parent = Check, BackgroundTransparency = 1, Size = UDim2.new(1,0,1,0), Text = "✓", Font = _0xd5fe._0x0e5f.FontBold, TextColor3 = _0xd5fe._0x0e5f.Theme.Text, TextSize = 16, TextTransparency = 1})
+                -- Toggle knob (circle)
+                local ToggleKnob = _0xd5fe._0x36b7("Frame", {Parent = ToggleTrack, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Text, Size = UDim2.new(0,14,0,14), Position = UDim2.new(0,2,0,2), BorderSizePixel = 0})
+                _0xd5fe._0x36b7("UICorner", {Parent = ToggleKnob, CornerRadius = UDim.new(1, 0)})
                 
-                Frame.MouseEnter:Connect(function() _0xd5fe._0xa4bd:Create(CheckStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play() end)
-                Frame.MouseLeave:Connect(function() _0xd5fe._0xa4bd:Create(CheckStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play() end)
+                -- Tooltip colors: info = blue, warning = yellow
+                local TooltipColors = {
+                    info = Color3.fromRGB(59, 130, 246),
+                    warning = Color3.fromRGB(255, 193, 59)
+                }
+                
+                Frame.MouseEnter:Connect(function() 
+                    _0xd5fe._0xa4bd:Create(TrackStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play()
+                    -- Show tooltip if options provided
+                    if TooltipOptions and TooltipOptions.Text then
+                        local tooltipType = TooltipOptions.Type or "info"
+                        local tooltipColor = TooltipColors[tooltipType] or TooltipColors.info
+                        local tooltipIcon = tooltipType == "warning" and _0xd5fe._0x0e5f.Icons.warning or _0xd5fe._0x0e5f.Icons.info
+                        
+                        _0xd5fe._0x0e5f.TooltipIcon.Image = tooltipIcon
+                        _0xd5fe._0x0e5f.TooltipIcon.ImageColor3 = tooltipColor
+                        _0xd5fe._0x0e5f.TooltipText.Text = TooltipOptions.Text
+                        _0xd5fe._0x0e5f.TooltipStroke.Color = tooltipColor
+                        _0xd5fe._0x0e5f.Tooltip.Visible = true
+                    end
+                end)
+                Frame.MouseLeave:Connect(function() 
+                    _0xd5fe._0xa4bd:Create(TrackStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.Theme.Outline}):Play()
+                    -- Hide tooltip
+                    if TooltipOptions and TooltipOptions.Text then
+                        _0xd5fe._0x0e5f.Tooltip.Visible = false
+                    end
+                end)
                 
                 local State = Default or false
                 local ToggleObj = {
@@ -1126,22 +1215,22 @@ function _0xd5fe._0x0e5f:CreateWindow(Settings)
                     ToggleObj.Value = State
                     if instant then
                         if State then
-                            Check.BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor
-                            Checkmark.TextTransparency = 0
+                            ToggleTrack.BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor
+                            ToggleKnob.Position = UDim2.new(1, -16, 0, 2)
                             Label.TextColor3 = _0xd5fe._0x0e5f.Theme.Text
                         else
-                            Check.BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element
-                            Checkmark.TextTransparency = 1
+                            ToggleTrack.BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element
+                            ToggleKnob.Position = UDim2.new(0, 2, 0, 2)
                             Label.TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim
                         end
                     else
                         if State then 
-                            _0xd5fe._0xa4bd:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play() 
-                            _0xd5fe._0xa4bd:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
+                            _0xd5fe._0xa4bd:Create(ToggleTrack, TweenInfo.new(0.2), {BackgroundColor3 = _0xd5fe._0x0e5f.AccentColor}):Play() 
+                            _0xd5fe._0xa4bd:Create(ToggleKnob, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Position = UDim2.new(1, -16, 0, 2)}):Play()
                             _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.Text}):Play()
                         else 
-                            _0xd5fe._0xa4bd:Create(Check, TweenInfo.new(0.2), {BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element}):Play()
-                            _0xd5fe._0xa4bd:Create(Checkmark, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+                            _0xd5fe._0xa4bd:Create(ToggleTrack, TweenInfo.new(0.2), {BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Element}):Play()
+                            _0xd5fe._0xa4bd:Create(ToggleKnob, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Position = UDim2.new(0, 2, 0, 2)}):Play()
                             _0xd5fe._0xa4bd:Create(Label, TweenInfo.new(0.2), {TextColor3 = _0xd5fe._0x0e5f.Theme.TextDim}):Play()
                         end
                     end
