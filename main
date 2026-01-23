@@ -637,26 +637,33 @@ function _0xd5fe._0x0e5f:CreateWindow(Settings)
     local Tooltip = _0xd5fe._0x36b7("Frame", {
         Parent = ScreenGui,
         Name = "Tooltip",
-        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Section,
-        Size = UDim2.new(0, 200, 0, 32),
+        BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Background,
+        Size = UDim2.new(0, 0, 0, 32),
         AutomaticSize = Enum.AutomaticSize.XY,
         ZIndex = 10000,
         Visible = false,
         BorderSizePixel = 0
     })
-    _0xd5fe._0x36b7("UICorner", {Parent = Tooltip, CornerRadius = UDim.new(0, 6)})
-    _0xd5fe._0x36b7("UIPadding", {Parent = Tooltip, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8)})
+    _0xd5fe._0x36b7("UICorner", {Parent = Tooltip, CornerRadius = UDim.new(0, 4)})
+    _0xd5fe._0x36b7("UIPadding", {Parent = Tooltip, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), PaddingTop = UDim.new(0, 6), PaddingBottom = UDim.new(0, 6)})
     
     local TooltipStroke = _0xd5fe._0x36b7("UIStroke", {Parent = Tooltip, Color = _0xd5fe._0x0e5f.Theme.Outline, Thickness = 1})
+    
+    local TooltipLayout = _0xd5fe._0x36b7("UIListLayout", {
+        Parent = Tooltip,
+        FillDirection = Enum.FillDirection.Horizontal,
+        VerticalAlignment = Enum.VerticalAlignment.Center,
+        Padding = UDim.new(0, 6)
+    })
     
     local TooltipIcon = _0xd5fe._0x36b7("ImageLabel", {
         Parent = Tooltip,
         Name = "Icon",
         BackgroundTransparency = 1,
-        Size = UDim2.new(0, 16, 0, 16),
-        Position = UDim2.new(0, 0, 0, 0),
+        Size = UDim2.new(0, 14, 0, 14),
+        LayoutOrder = 1,
         Image = _0xd5fe._0x0e5f.Icons.info,
-        ImageColor3 = Color3.fromRGB(59, 130, 246),
+        ImageColor3 = _0xd5fe._0x0e5f.Theme.Accent,
         ZIndex = 10001
     })
     
@@ -664,9 +671,9 @@ function _0xd5fe._0x0e5f:CreateWindow(Settings)
         Parent = Tooltip,
         Name = "Text",
         BackgroundTransparency = 1,
-        Position = UDim2.new(0, 22, 0, 0),
-        Size = UDim2.new(0, 0, 0, 16),
+        Size = UDim2.new(0, 0, 0, 14),
         AutomaticSize = Enum.AutomaticSize.X,
+        LayoutOrder = 2,
         Text = "",
         Font = _0xd5fe._0x0e5f.Font,
         TextColor3 = _0xd5fe._0x0e5f.Theme.Text,
@@ -1176,18 +1183,12 @@ function _0xd5fe._0x0e5f:CreateWindow(Settings)
                 local ToggleKnob = _0xd5fe._0x36b7("Frame", {Parent = ToggleTrack, BackgroundColor3 = _0xd5fe._0x0e5f.Theme.Text, Size = UDim2.new(0,14,0,14), Position = UDim2.new(0,2,0,2), BorderSizePixel = 0})
                 _0xd5fe._0x36b7("UICorner", {Parent = ToggleKnob, CornerRadius = UDim.new(1, 0)})
                 
-                -- Tooltip colors: info = blue, warning = yellow
-                local TooltipColors = {
-                    info = Color3.fromRGB(59, 130, 246),
-                    warning = Color3.fromRGB(255, 193, 59)
-                }
-                
                 Frame.MouseEnter:Connect(function() 
                     _0xd5fe._0xa4bd:Create(TrackStroke, TweenInfo.new(0.15), {Color = _0xd5fe._0x0e5f.AccentColor}):Play()
                     -- Show tooltip if options provided
                     if TooltipOptions and TooltipOptions.Text then
                         local tooltipType = TooltipOptions.Type or "info"
-                        local tooltipColor = TooltipColors[tooltipType] or TooltipColors.info
+                        local tooltipColor = tooltipType == "warning" and _0xd5fe._0x0e5f.Theme.Warning or _0xd5fe._0x0e5f.Theme.Accent
                         local tooltipIcon = tooltipType == "warning" and _0xd5fe._0x0e5f.Icons.warning or _0xd5fe._0x0e5f.Icons.info
                         
                         _0xd5fe._0x0e5f.TooltipIcon.Image = tooltipIcon
